@@ -1,0 +1,40 @@
+{
+  "appId": "com.collmot.skybrush.live",
+  "productName": "Dhaksha Live",
+
+  "artifactName": "${productName} ${version}.${ext}",
+
+  "files": [
+    {
+      "filter": ["assets/**/*", "!node_modules"]
+    },
+    {
+      "from": "build",
+      "filter": [
+        "*.bundle.js",
+        "index.html",
+        "*.mp3",
+        "*.png",
+        "*.svg",
+        "*.ttf",
+        "*.woff",
+        "*.woff2"
+      ]
+    }
+  ],
+  "win": {
+    "target": {
+      "target": "nsis",
+      "arch": "x64"
+    }
+  },
+
+  "nsis": {
+    "artifactName": "${productName} Setup ${version}.${ext}",
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
+  },
+  "directories": {
+    "output": "build"
+  }
+}
