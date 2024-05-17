@@ -15,6 +15,8 @@ import {
 import { formatNumberSafely, shortTimeAgoFormatter } from '~/utils/formatting';
 
 import { getUAVById } from './selectors';
+import { MessageSemantics } from '~/features/snackbar/types';
+import { showNotification } from '~/features/snackbar/slice';
 
 // TODO: Use the internal `naText` of `MiniTable` instead
 const naText = <span className='muted'>—</span>;
@@ -26,9 +28,11 @@ const StatusSummaryMiniTable = ({
   localPosition,
   mode,
   position,
+  dispatch,
 }) => {
   const { lat, lon, amsl, ahl, agl } = position || {};
   const hasLocalPosition = localPosition && Array.isArray(localPosition);
+
   const flightModeLabel = mode ? (
     <StatusText status={getSemanticsForFlightMode(mode)}>
       {getFlightModeLabel(mode)}
@@ -36,6 +40,14 @@ const StatusSummaryMiniTable = ({
   ) : (
     naText
   );
+
+  // dispatch(
+  //   showNotification({
+  //     message: `${mode}`,
+  //     semantics: MessageSemantics.ERROR,
+  //   })
+  // );
+
   const gpsFixType = gpsFix?.type;
   const shouldShowGlobalPositionInfo = !hasLocalPosition || gpsFixType;
 
@@ -139,5 +151,5 @@ export default connect(
   (state, ownProps) => getUAVById(state, ownProps.uavId),
 
   // mapDispatchToProps
-  {}
+  (dispatch) => ({ dispatch })
 )(StatusSummaryMiniTable);

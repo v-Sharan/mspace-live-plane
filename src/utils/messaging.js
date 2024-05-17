@@ -277,19 +277,17 @@ export const turnMotorsOnForUAVs = performMassOperation({
 
 // moveUAVs() not in this map because it requires extra args
 const OPERATION_MAP = {
-  flashLight: flashLightOnUAVs,
   shutdown: shutdownUAVs,
   land: landUAVs,
-  holdPosition: positionHoldUAVs,
   reset: resetUAVs,
   returnToHome: returnToHomeUAVs,
   sleep: sleepUAVs,
-  takeOff: takeoffUAVs,
   turnMotorsOff: turnMotorsOffForUAVs,
   turnMotorsOn: turnMotorsOnForUAVs,
   wakeUp: wakeUpUAVs,
   guided: guidedMode,
   automode: AutoMode,
+  takeOff: takeoffUAVs,
 };
 
 /**

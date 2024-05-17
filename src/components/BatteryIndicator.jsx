@@ -58,7 +58,7 @@ const BatteryIndicator = ({
   const classes = useStyles();
   const rootClass = clsx(className, classes.root, classes[`battery${status}`]);
 
-  let batteryPercent = (parseFloat(label) / 12.6) * 100;
+  let batteryPercent = (parseFloat(label) / 25.6) * 100;
 
   return (
     <Box fontSize='small' className={rootClass}>

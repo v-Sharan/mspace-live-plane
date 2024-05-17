@@ -14,12 +14,18 @@ import { noPayload } from '~/utils/redux';
 import { UAV_DETAILS_DIALOG_MIN_WIDTH } from './constants';
 import { type StoredUAV, UAVDetailsDialogTab } from './types';
 
+type CoordinatePair = [number, number];
+type CoordinateArray = CoordinatePair[][];
+
 type UAVDetailsSliceState = ReadonlyDeep<{
   open: boolean;
   selectedUAVId?: StoredUAV['id'];
   selectedTab: UAVDetailsDialogTab;
   position: Coordinate2DObject;
   width: number;
+  LoadMission: boolean;
+  color: string;
+  missionPoints: CoordinateArray;
 }>;
 
 const initialState: UAVDetailsSliceState = {
@@ -28,6 +34,9 @@ const initialState: UAVDetailsSliceState = {
   selectedTab: UAVDetailsDialogTab.PREFLIGHT,
   position: { x: 0, y: 0 },
   width: UAV_DETAILS_DIALOG_MIN_WIDTH,
+  LoadMission: false,
+  color: '',
+  missionPoints: [],
 };
 
 const { actions, reducer } = createSlice({
@@ -42,6 +51,22 @@ const { actions, reducer } = createSlice({
     closeUAVDetailsDialog: noPayload<UAVDetailsSliceState>((state) => {
       state.open = false;
     }),
+
+    DownloadMissionTrue: noPayload<UAVDetailsSliceState>((state) => {
+      state.LoadMission = true;
+    }),
+
+    DownloadMissionFalse: noPayload<UAVDetailsSliceState>((state) => {
+      state.LoadMission = false;
+    }),
+
+    setColorCode(state, { payload }: PayloadAction<string>) {
+      state.color = payload;
+    },
+
+    setMissionFromServer(state, { payload }: PayloadAction<CoordinateArray>) {
+      state.missionPoints = payload;
+    },
 
     setSelectedTabInUAVDetailsDialog(
       state,
@@ -86,11 +111,22 @@ export const {
   setSelectedUAVIdInUAVDetailsDialog,
   setUAVDetailsDialogPosition,
   setUAVDetailsDialogWidth,
+  DownloadMissionTrue,
+  DownloadMissionFalse,
+  setColorCode,
+  setMissionFromServer,
 } = actions;
 
 type RootStateWithUAVDetailsDialog = {
   dialogs: { uavDetails: UAVDetailsSliceState };
 };
+
+export const getColorCode = (state: RootStateWithUAVDetailsDialog): string =>
+  state.dialogs.uavDetails.color;
+
+export const getMissionFromServer = (
+  state: RootStateWithUAVDetailsDialog
+): CoordinateArray => state.dialogs.uavDetails.missionPoints as CoordinateArray;
 
 export const isUAVDetailsDialogOpen = (
   state: RootStateWithUAVDetailsDialog
@@ -111,5 +147,9 @@ export const getUAVDetailsDialogPosition = (
 export const getUAVDetailsDialogWidth = (
   state: RootStateWithUAVDetailsDialog
 ): number => state.dialogs.uavDetails.width;
+
+export const getLoadMissionState = (
+  state: RootStateWithUAVDetailsDialog
+): boolean => state.dialogs.uavDetails.LoadMission;
 
 export default reducer;

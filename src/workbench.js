@@ -148,6 +148,11 @@ export const componentRegistry = {
     label: 'Spare Drone',
     detachable: true,
   },
+  vtol: {
+    component: views.VtolPanel,
+    label: 'Vtol Swarm Panel',
+    detachable: true,
+  },
   map: {
     component: MapView,
     label: 'Map',

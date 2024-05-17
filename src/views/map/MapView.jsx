@@ -17,7 +17,6 @@ import {
   TransformFeatures,
 } from './interactions';
 import { Layers, stateObjectToLayer } from './layers';
-import { layer, source } from '@collmot/ol-react';
 import DrawingToolbar from './DrawingToolbar';
 import MapContextMenu from './MapContextMenu';
 import MapReferenceRequestHandler from './MapReferenceRequestHandler';
@@ -70,6 +69,7 @@ import { ImageLayer } from './layers/image';
 import { closeOnLoadImage } from '~/features/show/slice';
 import store from '~/store';
 import { useSelector, useDispatch } from 'react-redux';
+import { UAVTraceLayer } from './layers/uavtrace';
 /* ********************************************************************** */
 
 /**
@@ -170,6 +170,8 @@ const MapViewLayersPresentation = ({
       renderedLayers.push(<ImageLayer layer={Cutomlayer} zIndex={6} />);
     }
   }
+
+  // <UAVTraceLayer />
 
   return renderedLayers;
 };

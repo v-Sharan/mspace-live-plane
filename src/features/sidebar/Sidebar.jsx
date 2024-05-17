@@ -68,13 +68,6 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id='map' icon={<Map />} label={t('view.map')} component='map' />
-        {/* <Module
-          id='threeDView'
-          icon={<ThreeDRotation />}
-          label={t('view.three-d-view')}
-          component='three-d-view'
-          reorderEnabled={false}
-        /> */}
         <Module
           id='layers'
           icon={<Layers />}
@@ -89,31 +82,38 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
             component='feature-list'
           />
         )}
-        <hr />
         <Module
           id='uavs'
           icon={<Flight />}
           label={t('view.uav-list')}
           component='uav-list'
         />
-        {hasFeature('beacons') && (
-          <Module
-            id='beacons'
-            icon={<Antenna />}
-            label={t('view.beacon-list')}
-            component='beacon-list'
-          />
-        )}
-        {hasFeature('docks') && experimentalFeaturesEnabled && (
-          <Module
-            id='docks'
-            icon={<Gamepad />}
-            label={t('view.dock-list')}
-            component='dock-list'
-          />
-        )}
         <hr />
         {/* Do not use a single React fragment here for the next section; it would confuse `react-flexible-workbench` */}
+        <Module
+          id='camera'
+          icon={<CameraAltRounded />}
+          label={t('view.camera')}
+          component='camera'
+        />
+        {/* <Module
+          id='spare-drone'
+          icon={<CameraAltRounded />}
+          label='Spare Drone'
+          component={'spare'}
+        /> */}
+        <Module
+          id='locations'
+          icon={<Place />}
+          label={t('view.saved-location-list')}
+          component='saved-location-list'
+        />
+        <Module
+          id='vtol'
+          icon={<SwarmIcon />}
+          label={'VTOL Swarm'}
+          component='vtol'
+        />
         {hasShowControl && (
           <Module
             id='show'
@@ -122,73 +122,6 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
             component='show-control'
           />
         )}
-        {hasShowControl && (
-          <Module
-            id='lights'
-            icon={<WbSunny />}
-            label={t('view.light-control')}
-            component='light-control'
-          />
-        )}
-        {hasShowControl && <hr />}
-        <Module
-          id='clocks'
-          icon={<Alarm />}
-          label={t('view.lcd-clock-panel')}
-          component='lcd-clock-panel'
-        />
-
-        <Module
-          id='datasets'
-          icon={<Storage />}
-          label='Datasets'
-          component='dataset-list'
-        />
-
-        <Module
-          id='locations'
-          icon={<Place />}
-          label={t('view.saved-location-list')}
-          component='saved-location-list'
-        />
-        <hr />
-        <Module
-          id='notes'
-          icon={<Assignment />}
-          label={t('view.field-notes')}
-          component='field-notes'
-        />
-        {/* <Module
-          id='log'
-          badge={<LogStatusBadge />}
-          icon={<FormatListBulleted />}
-          label={t('view.log-panel')}
-          component='log-panel'
-        /> */}
-        {/* <Module
-          id='strike'
-          icon={<FormatListBulleted />}
-          label={t('view.strike')}
-          component='strike'
-        /> */}
-        <Module
-          id='camera'
-          icon={<CameraAltRounded />}
-          label={t('view.camera')}
-          component='camera'
-        />
-        <Module
-          id='spare-drone'
-          icon={<CameraAltRounded />}
-          label='Spare Drone'
-          component={'spare'}
-        />
-        {/* <Module
-          id='swarm'
-          icon={<SwarmIcon />}
-          label={'Swarm'}
-          component='swarm'
-        /> */}
       </ModuleTray>
     </div>
     {isOpen && (

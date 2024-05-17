@@ -18,11 +18,11 @@ import MessagesPanelView from './messages';
 import ShowControlPanel from './show-control';
 import UAVList from './uavs';
 import ThreeDTopLevelView from './three-d';
-import StrikePanel from './stike/StrikePanel';
-import CameraPanel from './camera/CameraPanel';
-import SwarmPanel from './swarm/SwarmPanel';
-import SpareDronePanel from './spareDrone/SpareDronePanel';
-
+import StrikePanel from './stike';
+import CameraPanel from './camera';
+import SwarmPanel from './swarm';
+import SpareDronePanel from './spareDrone';
+import VtolPanel from './VTOL';
 /* MapView not included as it is loaded lazily */
 
 const views = {
@@ -45,6 +45,7 @@ const views = {
   CameraPanel,
   SwarmPanel,
   SpareDronePanel,
+  VtolPanel,
 };
 
 export default views;

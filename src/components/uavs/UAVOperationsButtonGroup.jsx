@@ -19,7 +19,6 @@ import Moon from '@material-ui/icons/NightsStay';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Refresh from '@material-ui/icons/Refresh';
-import WbSunny from '@material-ui/icons/WbSunny';
 import GuidedMode from '@material-ui/icons/Bookmark';
 import AutoMode from '@material-ui/icons/Autorenew';
 import { changeTakeOffAlt } from '~/features/uav-control/slice';
@@ -62,19 +61,17 @@ const UAVOperationsButtonGroup = ({
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   const {
-    flashLight,
-    holdPosition,
     land,
     reset,
     returnToHome,
     shutdown,
     sleep,
-    takeOff,
     turnMotorsOff,
     turnMotorsOn,
     wakeUp,
     guided,
     automode,
+    takeOff,
   } = bindActionCreators(
     createUAVOperationThunks({
       getTargetedUAVIds(state) {
@@ -100,28 +97,6 @@ const UAVOperationsButtonGroup = ({
   const fontSize = size === 'small' ? 'small' : 'medium';
   const iconSize = size;
 
-  const flashLightsButton =
-    size === 'small' ? (
-      <Button
-        startIcon={<WbSunny />}
-        disabled={isSelectionEmpty}
-        size={iconSize}
-        onClick={flashLight}
-      >
-        {t('UAVOpButtonGrp.flashLights')}
-      </Button>
-    ) : (
-      <Tooltip content={t('UAVOpButtonGrp.flashLights')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={flashLight}
-        >
-          <WbSunny fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
-    );
-
   return (
     <>
       {!hideSeparators && startSeparator && (
@@ -132,7 +107,7 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={() => takeOff({ alt: 10 })}
+          onClick={takeOff}
         >
           <FlightTakeoff fontSize={fontSize} />
         </IconButton>
@@ -146,17 +121,7 @@ const UAVOperationsButtonGroup = ({
         }}
       />
 
-      <Tooltip content={t('UAVOpButtonGrp.positionHold')}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={holdPosition}
-        >
-          <PositionHold fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
-
-      <Tooltip content={'Guided Mode'}>
+      <Tooltip content={'QLoiter Mode'}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -204,7 +169,6 @@ const UAVOperationsButtonGroup = ({
               <Assignment />
             </IconButton>
           </Tooltip>
-          {flashLightsButton}
         </>
       )}
 
@@ -235,8 +199,6 @@ const UAVOperationsButtonGroup = ({
           />
         </IconButton>
       </Tooltip>
-
-      {size === 'small' && flashLightsButton}
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 

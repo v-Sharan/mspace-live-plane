@@ -104,29 +104,11 @@ const LargeControlButtonGroup = ({
       <Box display='flex' flexDirection='row' flex={1}>
         <ColoredButton
           className={classes.button}
-          color={Colors.positionHold}
-          icon={<PositionHold fontSize='inherit' />}
-          onClick={uavActions.holdPosition}
-        >
-          {broadcast ? 'Hold all' : 'Hold'}
-        </ColoredButton>
-        <ColoredButton
-          className={classes.button}
           color={Colors.warning}
           icon={<Home fontSize='inherit' />}
           onClick={uavActions.returnToHome}
         >
           {broadcast ? 'RTH all' : 'RTH'}
-        </ColoredButton>
-      </Box>
-      <Box display='flex' flexDirection='row' flex={1} mb={0.5}>
-        <ColoredButton
-          className={classes.button}
-          color={Colors.seriousWarning}
-          icon={<FlightLand fontSize='inherit' />}
-          onClick={uavActions.land}
-        >
-          {broadcast ? 'Land all' : 'Land'}
         </ColoredButton>
         <ColoredButton
           className={classes.button}

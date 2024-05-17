@@ -57,6 +57,16 @@ import MissionSlotTrajectoryFeature from '~/views/map/features/MissionSlotTrajec
 import UAVTrajectoryFeature from '~/views/map/features/UAVTrajectoryFeature';
 
 import missionOriginMarker from '~/../assets/img/mission-origin-marker.svg';
+import { MissionDownload } from '../features/UAVTrajectoryFeature';
+import {
+  getLoadMissionState,
+  getMissionFromServer,
+} from '~/features/uavs/details';
+import store from '~/store';
+import { MessageSemantics } from '~/features/snackbar/types';
+import { showNotification } from '~/features/snackbar/slice';
+
+const { dispatch } = store;
 
 // === Settings for this particular layer type ===
 
@@ -317,6 +327,7 @@ const missionConvexHullStyles = [
  * Selector that takes the current state and returns whether the convex hull of
  * the mission is selected.
  */
+
 const isConvexHullSelected = isSelected(areaIdToGlobalId(CONVEX_HULL_AREA_ID));
 
 const MissionInfoVectorSource = ({
@@ -332,6 +343,8 @@ const MissionInfoVectorSource = ({
   origin,
   selectedOriginIds,
   uavIdsForTrajectories,
+  loadMission,
+  missionArray,
 }) => {
   const features = [];
 
@@ -471,6 +484,39 @@ const MissionInfoVectorSource = ({
     }
   }
 
+  if (loadMission) {
+    let color = [
+      '#cd5c5c',
+      '#ffa500',
+      '#40e0d0',
+      '#ff7f50',
+      '#87cefa',
+      '#da70d6',
+      '#32cd32',
+      '#6495ed',
+      '#ff69b4',
+      '#ba55d3',
+    ];
+    if (missionArray?.length == 0) {
+      dispatch(
+        showNotification({
+          message: `Mission is Empty,After the Download`,
+          semantics: MessageSemantics.ERROR,
+        })
+      );
+    }
+    for (let coord in missionArray) {
+      features.push(
+        <MissionDownload
+          coords={coord}
+          color={color[coord]}
+          key={`missiondownload.${`${coord}`}`}
+          coordinates={missionArray[coord]}
+        />
+      );
+    }
+  }
+
   if (
     Array.isArray(missionSlotIdsForTrajectories) &&
     missionSlotIdsForTrajectories.length > 0
@@ -552,6 +598,8 @@ export const MissionInfoLayer = connect(
     uavIdsForTrajectories: layer?.parameters?.showTrajectoriesOfSelection
       ? getSelectedUAVIdsForTrajectoryDisplay(state)
       : undefined,
+    loadMission: getLoadMissionState(state),
+    missionArray: getMissionFromServer(state),
   }),
   // mapDispatchToProps
   {}

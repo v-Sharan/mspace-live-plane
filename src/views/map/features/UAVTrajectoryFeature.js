@@ -13,7 +13,10 @@ import { mapViewCoordinateFromLonLat } from '~/utils/geography';
 import CustomPropTypes from '~/utils/prop-types';
 import { fill, thinOutline, whiteThickOutline } from '~/utils/styles';
 import { Point } from 'ol/geom';
-
+import { MessageSemantics } from '~/features/snackbar/types';
+import { showNotification } from '~/features/snackbar/slice';
+import store from '~/store';
+import { getColorCode, setColorCode } from '~/features/uavs/details';
 /**
  * Style for the trajectory of a UAV.
  */
@@ -93,9 +96,44 @@ export const UAVTrajectoryFeature = ({ source, trajectory, uavId }) => {
     () => createStyleForTrajectoryInViewCoordinates(points),
     [points]
   );
+  console.log(points);
+  if (points?.length > 0) {
+    store.dispatch(
+      showNotification({
+        message: `${points[0]}`,
+        semantics: MessageSemantics.ERROR,
+      })
+    );
+  }
   return points ? (
     <Feature
       id={plannedTrajectoryIdToGlobalId(uavId)}
+      source={source}
+      style={style}
+    >
+      <geom.LineString coordinates={points} />
+    </Feature>
+  ) : null;
+};
+
+function getRandomHexColor() {
+  // Generate a random 32-bit integer (enough for six hex digits)
+  const randomValue = Math.floor(Math.random() * 0xffffff);
+
+  // Convert the random value to a hexadecimal string with leading zeroes
+  const hexCode = randomValue.toString(16).padStart(6, '0');
+
+  return `#${hexCode}`;
+}
+
+const MissionTrajectory = ({ points, source, color, coords }) => {
+  const style = new Style({
+    stroke: thinOutline(color),
+  });
+
+  return points ? (
+    <Feature
+      id={plannedTrajectoryIdToGlobalId(coords)}
       source={source}
       style={style}
     >
@@ -122,3 +160,17 @@ export default connect(
   // mapDispatchToProps
   {}
 )(UAVTrajectoryFeature);
+
+export const MissionDownload = connect(
+  (state, { coordinates, coords, color }) => {
+    let points = [];
+    for (let coord in coordinates) {
+      const FlatEarthCoordinate = mapViewCoordinateFromLonLat(
+        coordinates[coord]
+      );
+      points.push(FlatEarthCoordinate);
+    }
+    return { points, coords, color };
+  },
+  {}
+)(MissionTrajectory);
