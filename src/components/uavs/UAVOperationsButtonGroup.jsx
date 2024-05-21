@@ -103,7 +103,7 @@ const UAVOperationsButtonGroup = ({
         <ToolbarDivider orientation='vertical' />
       )}
 
-      <Tooltip content={t('UAVOpButtonGrp.takeOff')}>
+      {/* <Tooltip content={t('UAVOpButtonGrp.takeOff')}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -119,7 +119,7 @@ const UAVOperationsButtonGroup = ({
         onChange={({ target: { value } }) => {
           TakeoffChangeFunc(value);
         }}
-      />
+      /> */}
 
       <Tooltip content={'QLoiter Mode'}>
         <IconButton
@@ -150,11 +150,11 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      <Tooltip content={t('UAVOpButtonGrp.land')}>
+      {/* <Tooltip content={t('UAVOpButtonGrp.land')}>
         <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
           <FlightLand fontSize={fontSize} />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
       {!hideSeparators && <ToolbarDivider orientation='vertical' />}
 

@@ -43,6 +43,7 @@ export type StoredUAV = {
   localPosition?: Coordinate3D;
   mode?: string;
   position?: GPSPosition;
+  airspeed?: number;
 };
 
 export enum UAVDetailsDialogTab {

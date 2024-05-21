@@ -53,6 +53,7 @@ export default class UAV {
   light: number /* RGB565 */;
   localPosition?: Coordinate3D;
   mode?: string;
+  _airspeed?: number;
 
   /**
    * Constructor.
@@ -87,6 +88,7 @@ export default class UAV {
     this.light = 0xffff; /* white in RGB565 */
     this.localPosition = undefined;
     this.mode = undefined;
+    this._airspeed = undefined;
   }
 
   /**
@@ -101,6 +103,13 @@ export default class UAV {
    */
   get ahl(): number | undefined {
     return this._position?.ahl;
+  }
+
+  /**
+   * Returns the airspeed of the drone
+   */
+  get airspeed(): number | undefined {
+    return this._airspeed;
   }
 
   /**
@@ -218,6 +227,7 @@ export default class UAV {
       battery,
       light,
       debug,
+      airspeed,
     } = status;
     let errorList: ErrorCode[];
     let updated = false;
@@ -292,6 +302,11 @@ export default class UAV {
       updated = true;
     }
 
+    if (typeof this._airspeed == 'number') {
+      this._airspeed = airspeed;
+      updated = true;
+    }
+
     if (Array.isArray(battery)) {
       const [newVoltageRaw, newPercentage, newCharging] = battery;
 
@@ -342,6 +357,7 @@ export default class UAV {
       mode: this.mode,
       localPosition,
       position,
+      airspeed: this._airspeed,
     };
   }
 }

@@ -19,6 +19,7 @@ import {
   setMissionFromServer,
   DownloadMissionTrue,
 } from '~/features/uavs/details';
+import VideoSrc from '../../../assets/animation-man.mp4';
 const { dispatch } = store;
 
 const VtolPanel = () => {
@@ -84,6 +85,14 @@ const VtolPanel = () => {
 
   return (
     <Box style={{ margin: 10, gap: 20 }}>
+      {/* <video
+        autoPlay
+        loop
+        width='auto'
+        height='auto'
+        src={'http://192.168.0.104:8000/video_feed'}
+        type='video/mp4'
+      ></video> */}
       <FormGroup style={{ display: 'flex', flexDirection: 'row', gap: 15 }}>
         <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <FormControl fullWidth variant='standard'>

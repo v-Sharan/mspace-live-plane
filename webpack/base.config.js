@@ -134,7 +134,7 @@ module.exports = {
         include: path.join(projectRoot, 'assets', 'css'),
       },
       {
-        test: /\.(png|jpg|skyc)$/,
+        test: /\.(png|jpg|mp4)$/,
         type: 'asset/resource',
         include: path.join(projectRoot, 'assets'),
       },
