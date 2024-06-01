@@ -16,7 +16,7 @@ import { Button, Select } from '@material-ui/core';
 
 import { details } from './details';
 import tam5Single from '~/skyc/tambaram-5-alt.json';
-import DceRoad from '~/skyc/dc-3-new-loc.json';
+import DceRoad from '~/skyc/medur.json';
 
 import {
   InputLabel,

@@ -96,12 +96,12 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           label={t('view.camera')}
           component='camera'
         />
-        {/* <Module
+        <Module
           id='spare-drone'
           icon={<CameraAltRounded />}
-          label='Spare Drone'
-          component={'spare'}
-        /> */}
+          label='Video Panel'
+          component='spare'
+        />
         <Module
           id='locations'
           icon={<Place />}

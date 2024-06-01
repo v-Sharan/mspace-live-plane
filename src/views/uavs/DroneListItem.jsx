@@ -18,7 +18,7 @@ const useStyles = makeStyles(
       flexDirection: 'column',
       minWidth: theme.spacing(10),
       position: 'relative',
-
+      gap: 2,
       scrollMarginTop:
         '3em' /* to account for the hovering header in the list view */,
 

@@ -40,14 +40,6 @@ const StatusSummaryMiniTable = ({
   ) : (
     naText
   );
-
-  // dispatch(
-  //   showNotification({
-  //     message: `${mode}`,
-  //     semantics: MessageSemantics.ERROR,
-  //   })
-  // );
-
   const gpsFixType = gpsFix?.type;
   const shouldShowGlobalPositionInfo = !hasLocalPosition || gpsFixType;
 

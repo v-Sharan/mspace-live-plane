@@ -720,12 +720,14 @@ export function getSingleUAVStatusSummary(uav) {
   let details;
   let text;
   let textSemantics;
+  let airspeed;
 
   if (!uav) {
     // No such UAV
     status = undefined;
     text = 'missing';
     textSemantics = Status.WARNING;
+    airspeed = 0;
   } else if (uav.errors && uav.errors.length > 0) {
     // UAV has some status information that it wishes to report
     maxError = Math.max(...uav.errors);
@@ -752,6 +754,10 @@ export function getSingleUAVStatusSummary(uav) {
     // UAV is ready on the ground
     text = 'ready';
     textSemantics = Status.SUCCESS;
+  }
+
+  if (typeof uav.airspeed == 'number') {
+    airspeed = uav.airspeed.toFixed(2);
   }
 
   // We allow "normal" and "informational" messages to be overridden by the
@@ -783,6 +789,7 @@ export function getSingleUAVStatusSummary(uav) {
     text,
     textSemantics,
     batteryStatus: uav ? uav.battery : undefined,
+    airspeed,
   };
 }
 /* eslint-enable complexity */

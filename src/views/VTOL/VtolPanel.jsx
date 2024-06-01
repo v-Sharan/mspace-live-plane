@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Box,
@@ -15,19 +15,30 @@ import messageHub from '~/message-hub';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { showNotification } from '~/features/snackbar/slice';
 import store from '~/store';
+import { connect } from 'react-redux';
 import {
   setMissionFromServer,
   DownloadMissionTrue,
 } from '~/features/uavs/details';
-import VideoSrc from '../../../assets/animation-man.mp4';
 const { dispatch } = store;
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
-const VtolPanel = () => {
+const VtolPanel = ({ selectedUAVIds }) => {
   const [data, setData] = useState({
     numofdrone: 0,
     turn: '',
     skip: 0,
+    lat: 0,
+    lon: 0,
+    uavid: 0,
   });
+
+  useEffect(() => {
+    if (!selectedUAVIds?.length) return;
+    setData((prev) => {
+      return { ...prev, uavid: parseInt(selectedUAVIds[0]) };
+    });
+  }, [selectedUAVIds]);
 
   const handleMsg = async (msg) => {
     if (msg == 'uploadmission') {
@@ -54,6 +65,24 @@ const VtolPanel = () => {
             semantics: MessageSemantics.SUCCESS,
           })
         );
+      }
+      if (msg == 'target') {
+        if (res?.body?.message[0]?.length == 0) {
+          dispatch(
+            showNotification({
+              message: `Read a Empty Mission`,
+              semantics: MessageSemantics.ERROR,
+            })
+          );
+          return;
+        }
+        dispatch(
+          showNotification({
+            message: `${res.body.message?.length}`,
+            semantics: MessageSemantics.ERROR,
+          })
+        );
+        dispatch(setMissionFromServer(res.body.message));
       }
       if (msg === 'download') {
         if (res?.body?.message[0]?.length == 0) {
@@ -85,14 +114,6 @@ const VtolPanel = () => {
 
   return (
     <Box style={{ margin: 10, gap: 20 }}>
-      {/* <video
-        autoPlay
-        loop
-        width='auto'
-        height='auto'
-        src={'http://192.168.0.104:8000/video_feed'}
-        type='video/mp4'
-      ></video> */}
       <FormGroup style={{ display: 'flex', flexDirection: 'row', gap: 15 }}>
         <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <FormControl fullWidth variant='standard'>
@@ -177,9 +198,49 @@ const VtolPanel = () => {
             Skip waypoint
           </Button>
         </Box>
+        <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+          <FormControl variant='standard'>
+            <InputLabel htmlFor='lat'>Latitude</InputLabel>
+            <Input
+              name='lat'
+              type='number'
+              inputMode='numeric'
+              inputProps={{ id: 'lat' }}
+              value={data.lat}
+              onChange={({ target: { value, name } }) =>
+                setData((prev) => {
+                  return { ...prev, [name]: value };
+                })
+              }
+            />
+          </FormControl>
+          <FormControl variant='standard'>
+            <InputLabel htmlFor='lon'>Longitude</InputLabel>
+            <Input
+              name='lon'
+              type='number'
+              inputMode='numeric'
+              inputProps={{ id: 'lon' }}
+              value={data.lon}
+              onChange={({ target: { value, name } }) =>
+                setData((prev) => {
+                  return { ...prev, [name]: value };
+                })
+              }
+            />
+          </FormControl>
+          <Button variant='contained' onClick={() => handleMsg('target')}>
+            Set Traget
+          </Button>
+        </Box>
       </FormGroup>
     </Box>
   );
 };
 
-export default VtolPanel;
+export default connect(
+  (state) => ({
+    selectedUAVIds: getSelectedUAVIds(state),
+  }),
+  (dispatch) => ({})
+)(VtolPanel);

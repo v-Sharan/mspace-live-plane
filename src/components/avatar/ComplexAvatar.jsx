@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
@@ -97,6 +97,7 @@ const ComplexAvatar = ({
   status,
   text,
   textSemantics,
+  airspeed,
 }) => {
   const classes = useStyles();
 
@@ -137,6 +138,9 @@ const ComplexAvatar = ({
       </div>
       {(details || text) && (
         <StatusPill status={textSemantics}>{details || text}</StatusPill>
+      )}
+      {airspeed && (
+        <StatusPill status={textSemantics}>{airspeed} m/s</StatusPill>
       )}
       {batteryStatus && (
         <BatteryIndicator formatter={batteryFormatter} {...batteryStatus} />

@@ -41,14 +41,6 @@ const ClockDisplayLabel = ({
         })
       );
     }, 1000);
-    // for (const uav of uavs) {
-    //   store.dispatch(
-    //     showNotification({
-    //       message: `${uav.lat} ${uav.lon}`,
-    //       semantics: MessageSemantics.SUCCESS,
-    //     })
-    //   );
-    // }
     return () => clearInterval(intervalId);
   }, []);
 

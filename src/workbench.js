@@ -145,7 +145,7 @@ export const componentRegistry = {
   },
   spare: {
     component: views.SpareDronePanel,
-    label: 'Spare Drone',
+    label: 'Video Panel',
     detachable: true,
   },
   vtol: {

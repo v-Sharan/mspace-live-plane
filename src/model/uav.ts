@@ -302,7 +302,7 @@ export default class UAV {
       updated = true;
     }
 
-    if (typeof this._airspeed == 'number') {
+    if (airspeed) {
       this._airspeed = airspeed;
       updated = true;
     }
