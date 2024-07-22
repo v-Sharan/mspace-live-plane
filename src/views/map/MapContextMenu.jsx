@@ -135,6 +135,16 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Fly here at altitude…
               </MenuItem>,
+              <MenuItem
+                key='flytotarget'
+                dense
+                onClick={this._moveSelectedUAVsAtGivenAltitude}
+              >
+                <ListItemIcon>
+                  <Flight />
+                </ListItemIcon>
+                Enter Target Lat/Lon
+              </MenuItem>,
               <Divider key='div1' />,
               <MenuItem key='takeoff' dense onClick={this._takeoffSelectedUAVs}>
                 <ListItemIcon>

@@ -16,7 +16,6 @@ import { Point } from 'ol/geom';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { showNotification } from '~/features/snackbar/slice';
 import store from '~/store';
-import { getColorCode, setColorCode } from '~/features/uavs/details';
 /**
  * Style for the trajectory of a UAV.
  */
@@ -115,16 +114,6 @@ export const UAVTrajectoryFeature = ({ source, trajectory, uavId }) => {
     </Feature>
   ) : null;
 };
-
-function getRandomHexColor() {
-  // Generate a random 32-bit integer (enough for six hex digits)
-  const randomValue = Math.floor(Math.random() * 0xffffff);
-
-  // Convert the random value to a hexadecimal string with leading zeroes
-  const hexCode = randomValue.toString(16).padStart(6, '0');
-
-  return `#${hexCode}`;
-}
 
 const MissionTrajectory = ({ points, source, color, coords }) => {
   const style = new Style({
