@@ -121,7 +121,7 @@ const UAVOperationsButtonGroup = ({
         }}
       /> */}
 
-      <Tooltip content={'QLoiter Mode'}>
+      {/* <Tooltip content={'QLoiter Mode'}>
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
@@ -148,7 +148,7 @@ const UAVOperationsButtonGroup = ({
         >
           <Home fontSize={fontSize} />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
       {/* <Tooltip content={t('UAVOpButtonGrp.land')}>
         <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
@@ -156,9 +156,9 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip> */}
 
-      {!hideSeparators && <ToolbarDivider orientation='vertical' />}
+      {/* {!hideSeparators && <ToolbarDivider orientation='vertical' />} */}
 
-      {size !== 'small' && (
+      {/* {size !== 'small' && (
         <>
           <Tooltip content={t('UAVOpButtonGrp.properties')}>
             <IconButton
@@ -170,10 +170,10 @@ const UAVOperationsButtonGroup = ({
             </IconButton>
           </Tooltip>
         </>
-      )}
+      )} */}
 
-      {!hideSeparators && <ToolbarDivider orientation='vertical' />}
-
+      {/* {!hideSeparators && <ToolbarDivider orientation='vertical' />} */}
+      {/* 
       <Tooltip content={t('UAVOpButtonGrp.armMotors')}>
         <IconButton
           disabled={isSelectionEmpty}
@@ -244,7 +244,7 @@ const UAVOperationsButtonGroup = ({
             fontSize={fontSize}
           />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
       {size !== 'small' && (
         <>

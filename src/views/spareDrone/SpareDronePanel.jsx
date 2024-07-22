@@ -25,7 +25,7 @@ const SpareDronePanel = () => {
         src='http://192.168.6.215:8000/video_feed'
       /> */}
       {/* <iframe src='https://www.youtube.com/embed/cWDJoK8zw58'></iframe> */}
-      <iframe
+      {/* <iframe
         style={{
           position: 'absolute',
           top: 0,
@@ -42,7 +42,7 @@ const SpareDronePanel = () => {
         allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share'
         referrerpolicy='strict-origin-when-cross-origin'
         loading='lazy'
-      />
+      /> */}
     </>
   );
 };
