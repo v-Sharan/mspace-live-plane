@@ -19,7 +19,7 @@ const initialState: MapCachingSliceState = {
   dialog: {
     open: false,
   },
-  enabled: false,
+  enabled: true,
 };
 
 const { actions, reducer } = createSlice({

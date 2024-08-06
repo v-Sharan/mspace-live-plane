@@ -7,6 +7,7 @@
   "DrawingToolbar": {
     "addMarker": "Add marker",
     "cutHole": "Cut hole into polygon",
+    "distance": "Distance",
     "drawCircle": "Draw circle",
     "drawPath": "Draw path",
     "drawPolygon": "Draw polygon",

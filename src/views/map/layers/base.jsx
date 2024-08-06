@@ -22,6 +22,9 @@ import {
 } from '~/model/sources';
 import { streetsV6Style } from '~/views/map/styles/mapbox';
 
+import store from '~/store';
+import { getVisibleLayersInOrder } from '~/selectors/ordered';
+
 // === Settings for this particular layer type ===
 
 const BaseLayerSettingsPresentation = ({ layer, onLayerSourceChanged }) => {
@@ -102,7 +105,6 @@ LayerType.propTypes = {
 
 const LayerSourcePresentation = ({ apiKeys, tileLoadFunction, type }) => {
   const attributions = attributionsForSource(type);
-
   switch (type) {
     case Source.MAPBOX.STATIC:
       return (
@@ -267,7 +269,19 @@ LayerSourcePresentation.propTypes = {
  * it to the given image tile.
  */
 function loadTile(imageTile, url) {
+  // const arr = url.split('.jpg')[0].split('/');
+  // const lat = tile2lat(parseInt(arr[7]), parseInt(arr[5]));
+  // const lon = tile2long(parseInt(arr[6]), parseInt(arr[5]));
+  // const { getState } = store;
   imageTile.getImage().src = url;
+}
+
+function tile2long(x, z) {
+  return (x / Math.pow(2, z)) * 360 - 180;
+}
+function tile2lat(y, z) {
+  var n = Math.PI - (2 * Math.PI * y) / Math.pow(2, z);
+  return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
 }
 
 /**
@@ -307,11 +321,13 @@ const LayerSource = connect(
   {}
 )(LayerSourcePresentation);
 
-export const BaseLayer = ({ layer, zIndex }) => (
-  <LayerType type={layer.parameters.source} zIndex={zIndex}>
-    <LayerSource type={layer.parameters.source} />
-  </LayerType>
-);
+export const BaseLayer = ({ layer, zIndex }) => {
+  return (
+    <LayerType type={layer.parameters.source} zIndex={zIndex}>
+      <LayerSource type={layer.parameters.source} />
+    </LayerType>
+  );
+};
 
 BaseLayer.propTypes = {
   layer: PropTypes.object,

@@ -150,10 +150,11 @@ const { actions, reducer } = createSlice({
 
       // Generate the new feature object by copying the argument and ensuring
       // that it has the chosen ID
+
       const newFeature: FeatureProperties = {
         visible: true,
         filled: true,
-        measure: false,
+        measure: type === 'lineString' ? true : false,
         showPoints: false,
         ...structuredClone(feature),
         id,

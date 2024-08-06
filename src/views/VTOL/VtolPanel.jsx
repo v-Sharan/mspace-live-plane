@@ -233,6 +233,7 @@ const VtolPanel = ({ selectedUAVIds }) => {
             Set Traget
           </Button>
         </Box>
+        <Button onClick={() => handleMsg('gimbal')}>gimbal status</Button>
       </FormGroup>
     </Box>
   );

@@ -7,17 +7,52 @@ import { Button, Box } from '@material-ui/core';
 import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
+import { makeStyles } from '@material-ui/core/styles';
 
 const { dispatch } = store;
 
-const CameraPanel = ({ onLoadImage }) => {
-  const semantics = {
-    SUCCESS: MessageSemantics.SUCCESS,
-    INFO: MessageSemantics.INFO,
-    ERROR: MessageSemantics.ERROR,
-    WARNING: MessageSemantics.WARNING,
-  };
+// const useStyles = makeStyles(
+//   (theme) => ({
+//     joystick: {
+//       display: 'flex',
+//       flexDirection: 'column',
+//       alignItems: 'center',
+//     },
+//     middleRow: {
+//       display: 'flex',
+//       justifyContent: 'center',
+//       width: '100%',
+//     },
+//     joystickButton: {
+//       margin: '5px',
+//       padding: '10px',
+//       fontSize: '18px',
+//       cursor: 'pointer',
+//     },
 
+//     joystickButtonUp: {
+//       alignSelf: 'center',
+//     },
+
+//     joystickbuttonDown: {
+//       alignSelf: 'center',
+//     },
+
+//     joystickButton: {
+//       marginLeft: '5px',
+//       marginRight: '5px',
+//     },
+
+//     allcamera: {
+//       display: 'flex',
+//       gap: 10,
+//     },
+//   }),
+//   { name: 'CameraPanel' }
+// );
+
+const CameraPanel = ({ onLoadImage }) => {
+  // const styles = useStyles();
   const [url, setUrl] = useState([]);
 
   // const handleURL = () => {
@@ -248,12 +283,12 @@ const CameraPanel = ({ onLoadImage }) => {
     <Box style={{ margin: 10, gap: 20 }}>
       <Box>
         <h3>Camera Test</h3>
-        {/* <Button onClick={handleTest} variant='contained'>
+        <Button onClick={handleTest} variant='contained'>
           Test All Camera
-        </Button> */}
-        {/* <Button onClick={handleURL} variant='contained'>
+        </Button>
+        <Button onClick={() => {}} variant='contained'>
           Load Url
-        </Button> */}
+        </Button>
         <Button onClick={onLoadImage} variant='contained'>
           Load Image
         </Button>

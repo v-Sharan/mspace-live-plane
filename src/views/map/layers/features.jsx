@@ -2,7 +2,7 @@ import createColor from 'color';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
 import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
-import { Circle, Style, Text } from 'ol/style';
+import { Circle, Style, Text, Fill } from 'ol/style';
 import React, { useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 
@@ -133,6 +133,8 @@ const styleForFeature = (
   const styles = [];
   const radius = 6;
 
+  console.log(labelStyle);
+
   switch (type) {
     case FeatureType.POINTS:
       styles.push(
@@ -243,13 +245,14 @@ const styleForFeature = (
     styles.push(
       new Style({
         text: new Text({
-          font: '12px sans-serif',
+          font: '20px sans-serif',
           offsetY: type === FeatureType.LINE_STRING ? 3 : 15,
           placement: type === 'lineString' ? 'line' : 'point',
           stroke: labelStrokes[labelStyle],
           text: `(${measureFeature(feature)})`,
           textAlign: 'center',
           textBaseline: type === FeatureType.LINE_STRING ? 'top' : 'middle',
+          fill: new Fill({ color: 'black' }),
         }),
       })
     );

@@ -7,6 +7,7 @@
   "DrawingToolbar": {
     "addMarker": "Jelölő hozzáadása",
     "cutHole": "Lyuk vágás sokszögbe",
+    "distance": "",
     "drawCircle": "Kör rajzolás",
     "drawPath": "Útvonal rajzolás",
     "drawPolygon": "Sokszög rajzolás",

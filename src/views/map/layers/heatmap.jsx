@@ -554,7 +554,6 @@ class HeatmapLayerPresentation extends React.Component {
     const processedValue = processValue(value);
     const processedMin = processValue(minValue);
     const processedMax = processValue(maxValue);
-
     if (value < threshold) {
       return 'hsla(0, 100%, 100%, 0.5)';
     }

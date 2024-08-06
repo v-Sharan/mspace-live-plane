@@ -116,6 +116,7 @@ const ThreeDViewTab = (props) => (
               >
                 {grids.map((item) => (
                   <MenuItem key={item.id} value={item.id}>
+                    /* i18next-extract-disable-line */
                     {t(item.label)}
                   </MenuItem>
                 ))}

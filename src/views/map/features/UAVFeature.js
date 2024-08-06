@@ -11,10 +11,10 @@ import DroneImage from '~/../assets/img/plane-icon.png';
 import DroneImageInfo from '~/../assets/img/ArmPlane.png';
 import DroneImageWarning from '~/../assets/img/drone-x-black-warning-32x32.png';
 import DroneImageError from '~/../assets/img/errorPlane.png';
-import RvtImage from '~/../assets/img/rvt.png';
+import RvtImageIcon from '~/../assets/img/rvt.png';
 import SelectionGlow from '~/../assets/img/GlowPlane.png';
 import { Severity } from '~/model/enums';
-
+import GimbalPolygon from '~/../assets/img/up.png';
 const droneImages = {
   [Severity.INFO]: DroneImageInfo,
   [Severity.WARNING]: DroneImageWarning,
@@ -57,6 +57,7 @@ export default class UAVFeature extends Feature {
     this._labelColor = '';
     this._heading = 0;
     this._status = null;
+    this._gimbalHeading = 0;
 
     this.uavId = uavId;
     this._setupStyle();
@@ -67,6 +68,14 @@ export default class UAVFeature extends Feature {
    */
   get heading() {
     return this._heading;
+  }
+
+  /**
+   * Returns the current gimbal heading of the UAV according to the feature.
+   */
+
+  get gimbalHeading() {
+    return this._gimbalHeading;
   }
 
   /**
@@ -85,6 +94,24 @@ export default class UAVFeature extends Feature {
       const rotation = this._headingToRotation();
       this._iconImage.setRotation(rotation);
       this._selectionImage.setRotation(rotation);
+    }
+  }
+
+  /**
+   * Sets the current gimbal heading of the UAV.
+   *
+   * @param {number} value  the new heading of the UAV, in degrees
+   */
+  set gimbalHeading(value) {
+    if (this._gimbalHeading === value) {
+      return;
+    }
+
+    this._gimbalHeading = value;
+
+    if (this._gimbalIcon) {
+      const rotation = this._headingToRotation();
+      this._gimbalIcon.setRotation(rotation);
     }
   }
 
@@ -182,12 +209,22 @@ export default class UAVFeature extends Feature {
       rotation: this._headingToRotation(),
       snapToPixel: false,
       src: RVTImage.includes(this.uavId)
-        ? RvtImage
+        ? RvtImageIcon
         : droneImages[this._status] || DroneImage,
     });
     this._iconImage = iconImage;
 
+    const gimbalIconImage = new Icon({
+      src: GimbalPolygon,
+      rotateWithView: true,
+      rotation: this._gimbalHeadingToRotate,
+      snapToPixel: false,
+    });
+    this._gimbalIcon = gimbalIconImage;
+
     const iconStyle = new Style({ image: iconImage });
+    const gimbalIconStyle = new Style({ image: gimbalIconImage });
+    // styles.push(gimbalIconStyle);
     styles.push(iconStyle);
 
     // Selection image
@@ -237,6 +274,14 @@ export default class UAVFeature extends Feature {
    * value to use in the OpenLayers feature style.
    */
   _headingToRotation(heading) {
+    if (heading === undefined) {
+      heading = this._heading;
+    }
+
+    return toRadians(heading % 360);
+  }
+
+  _gimbalHeadingToRotate(heading) {
     if (heading === undefined) {
       heading = this._heading;
     }

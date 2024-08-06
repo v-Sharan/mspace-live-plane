@@ -45,6 +45,13 @@ import { getNameOfFeatureType, getIconOfFeatureType } from '~/model/features';
 import { featureIdToGlobalId } from '~/model/identifiers';
 import { fitCoordinatesIntoMapView } from '~/signals';
 
+import { showNotification } from '~/features/snackbar/actions';
+import { MessageSemantics } from '~/features/snackbar/types';
+
+import store from '~/store';
+
+const { dispatch } = store;
+
 const ICON_SIZE = 24;
 const GAP_SIZE = 12;
 

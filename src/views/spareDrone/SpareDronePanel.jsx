@@ -1,12 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Box from '@material-ui/core/Box';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
+import {
+  MenuItem,
+  Select,
+  Button,
+  FormControl,
+  InputLabel,
+} from '@material-ui/core';
 import './index.css';
 import messageHub from '~/message-hub';
 import store from '~/store';
 import { showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
+import { Joystick } from 'react-joystick-component';
+import LongPressButton from '~/components/button/LongPressButton';
 
 const { dispatch } = store;
 
@@ -14,45 +24,84 @@ const video = [
   {
     id: 1,
     name: 'Camera 1',
-    url: 'http://192.168.6.21:8000/video_1',
-    ip: '192.168.6.131',
+    url: 'http://192.168.1.101:8000/video_1',
+    ip: '192.168.6.122',
   },
   {
     id: 2,
     name: 'Camera 2',
-    url: 'http://192.168.6.21:8000/video_2',
-    ip: '192.168.6.161',
+    url: 'http://192.168.1.101:8000/video_2',
+    ip: '192.168.6.126',
   },
-  { id: 3, name: 'All Camera', url: 'http://192.168.6.21:8000/all_camera' },
+  {
+    id: 3,
+    name: 'Camera 3',
+    url: 'http://192.168.1.101:8000/video_3',
+    ip: '192.168.6.128',
+  },
+  {
+    id: 4,
+    name: 'Camera 4',
+    url: 'http://192.168.1.101:8000/video_4',
+    ip: '192.168.6.129',
+  },
+  {
+    id: 5,
+    name: 'Camera 5',
+    url: 'http://192.168.1.101:8000/video_5',
+    ip: '192.168.6.130',
+  },
+  {
+    id: 6,
+    name: 'Camera 6',
+    url: 'http://192.168.1.101:8000/video_6',
+    ip: '192.168.6.133',
+  },
+  {
+    id: 7,
+    name: 'Camera 7',
+    url: 'http://192.168.1.101:8000/video_7',
+    ip: '192.168.6.134',
+  },
+  {
+    id: 8,
+    name: 'Camera 8',
+    url: 'http://192.168.1.101:8000/video_8',
+    ip: '192.168.6.135',
+  },
+  {
+    id: 9,
+    name: 'All Camera',
+    url: 'http://192.168.1.101:8000/video_8',
+    ip: 'All Camera',
+  },
 ];
+
+function getUrlByIp(ip) {
+  const foundObject = video.find((item) => item.ip === ip);
+  return foundObject ? foundObject : 'Not found';
+}
 
 const SpareDronePanel = () => {
   const [camId, setCamId] = useState(video[0].id);
   const [camUrl, setCamUrl] = useState(video[0].url);
   const [allCamera, setAllCamera] = useState(false);
   const [allCamUrl, setAllCamUrl] = useState([]);
-  const [gimbal, setGimbal] = useState('');
+  const [gimbal, setGimbal] = useState(video[0].ip);
+  const [tracking, setTracking] = useState(false);
 
-  // const [camSelected, setCamSelected] = useState('');
+  // const joystickRef = useRef();
 
-  // useEffect(() => {
-  //   dispatch(
-  //     showNotification({
-  //       message: `${camUrl} Message sent`,
-  //       semantics: MessageSemantics.SUCCESS,
-  //     })
-  //   );
-  // }, [camUrl]);
-
-  const onCameraChange = async (id, url, ip) => {
-    if (id == 3) {
+  const onCameraChange = async ({ target }) => {
+    const { id, url } = getUrlByIp(target.value);
+    if (id == 9) {
       setAllCamera(true);
       setCamId(id);
+      setGimbal(target.value);
       try {
         const res = await fetch(url);
         const data = await res.json();
         setAllCamUrl(data?.result);
-        return;
       } catch (e) {
         console.log(e);
         dispatch(
@@ -61,15 +110,19 @@ const SpareDronePanel = () => {
             semantics: MessageSemantics.ERROR,
           })
         );
+      } finally {
+        return;
       }
     }
+
     setAllCamera(false);
     setCamId(id);
     setCamUrl(url);
-    setGimbal(ip);
+    setGimbal(target.value);
   };
 
   const onButtonPress = async (msg) => {
+    if (allCamera) return;
     try {
       const res = await messageHub.sendMessage({
         type: 'X-Camera-MISSION',
@@ -77,10 +130,71 @@ const SpareDronePanel = () => {
         ip: gimbal,
       });
 
-      if (Boolean(res?.body?.message)) {
+      if (!Boolean(res?.body?.message)) {
         dispatch(
           showNotification({
-            message: `${msg} Message sent`,
+            message: `${msg} Message Failed`,
+            semantics: MessageSemantics.ERROR,
+          })
+        );
+      }
+    } catch (e) {
+      dispatch(
+        showNotification({
+          message: `${e} Command is Failed`,
+          semantics: MessageSemantics.ERROR,
+        })
+      );
+    }
+  };
+
+  // const sourceRadioButtons = video.map((source) => (
+  //   <FormControlLabel
+  //     key={source.name}
+  //     value={source.url}
+  //     label={source.ip}
+  //     style={{ marginTop: 5 }}
+  //     control={<Radio checked={camId === source.id} />}
+  //     onChange={onCameraChange.bind(this, source.id, source.url, source.ip)}
+  //   />
+  // ));
+
+  const handleDoubleClick = async (event) => {
+    if (tracking) {
+      dispatch(
+        showNotification({
+          message: `Tracking is already enabled`,
+          semantics: MessageSemantics.INFO,
+        })
+      );
+      return;
+    }
+    const rect = event.target.getBoundingClientRect();
+
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    // setCoordinates({ x, y });
+    try {
+      const res = await messageHub.sendMessage({
+        type: 'X-Camera-MISSION',
+        x: parseInt(x),
+        y: parseInt(y),
+        ip: gimbal,
+        message: 'track',
+      });
+
+      if (!Boolean(res?.body?.message)) {
+        dispatch(
+          showNotification({
+            message: `Tracking Message Failed`,
+            semantics: MessageSemantics.ERROR,
+          })
+        );
+      } else {
+        setTracking(true);
+        dispatch(
+          showNotification({
+            message: `Tracking Started`,
             semantics: MessageSemantics.SUCCESS,
           })
         );
@@ -95,87 +209,114 @@ const SpareDronePanel = () => {
     }
   };
 
-  const sourceRadioButtons = video.map((source) => (
-    <FormControlLabel
-      key={source.name}
-      value={source.url}
-      label={source.name}
-      style={{ marginTop: 5 }}
-      control={<Radio checked={camId === source.id} />}
-      onChange={onCameraChange.bind(this, source.id, source.url, source.ip)}
-    />
-  ));
+  const imageStyle = {
+    width: '150px',
+    height: '150px',
+    objectFit: 'cover',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    margin: '5px',
+  };
+
+  const gridStyle = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '10px',
+    justifyContent: 'center',
+    padding: '20px',
+  };
 
   return (
     <div>
-      {allCamera ? (
-        camId == 3 &&
-        allCamUrl?.length != 0 && (
-          <div className='allcamera'>
-            {allCamUrl?.map(({ url, ip }) => (
-              <img
-                style={{
-                  // position: 'absolute',
-                  width: '50%',
-                  height: '50%',
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  dispatch(
-                    showNotification({
-                      message: `Gimabal ip set to ${ip}`,
-                      semantics: MessageSemantics.SUCCESS,
-                    })
-                  );
-                  setGimbal(ip);
-                }}
-                src={url}
-              />
+      <div style={{ backgroundColor: 'red', alignSelf: 'center' }}>
+        <FormControl>
+          <InputLabel id='demo-simple-select-label'>Age</InputLabel>
+          <Select
+            id='demo-simple-select-label'
+            onChange={onCameraChange}
+            value={gimbal}
+          >
+            {video.map(({ id, ip, name, url }) => (
+              <MenuItem value={ip} name={url}>
+                {ip}
+              </MenuItem>
             ))}
-          </div>
-        )
-      ) : (
-        <img
-          // ref={imgRef}
-          style={{
-            // position: 'absolute',
-            width: '50%',
-            height: '50%',
+          </Select>
+        </FormControl>
+        <LongPressButton
+          onLongPress={onButtonPress.bind(this, 'zoom_in')}
+          onLongPressEnd={onButtonPress.bind(this, 'zoom_stop')}
+        >
+          Zoom in
+        </LongPressButton>
+        <LongPressButton
+          onLongPress={onButtonPress.bind(this, 'zoom_out')}
+          onLongPressEnd={onButtonPress.bind(this, 'zoom_stop')}
+        >
+          Zoom out
+        </LongPressButton>
+        <Button
+          disabled={!tracking}
+          onClick={() => {
+            setTracking(false);
           }}
-          src={camUrl}
-        />
-      )}
-      <RadioGroup key='cameraPanel' name='source.camera'>
-        {sourceRadioButtons}
-      </RadioGroup>
-      <h1>Gimbal Control</h1>
-      <div className='joystick'>
-        <button
-          className='joystick-button up'
-          onClick={() => onButtonPress('up')}
         >
-          ↑
-        </button>
-        <div className='middle-row'>
-          <button
-            className='joystick-button left'
-            onClick={() => onButtonPress('left')}
-          >
-            ←
-          </button>
-          <button
-            className='joystick-button right'
-            onClick={() => onButtonPress('right')}
-          >
-            →
-          </button>
+          Stop Recording
+        </Button>
+        <div className='data'>
+          <div class='gamepad'>
+            <div class='row'>
+              <div className='button'></div>
+              <LongPressButton
+                onLongPress={onButtonPress.bind(this, 'up')}
+                onLongPressEnd={onButtonPress.bind(this, 'stop')}
+              >
+                Up
+              </LongPressButton>
+              <div className='button'></div>
+            </div>
+            <div class='row'>
+              <LongPressButton
+                onLongPress={onButtonPress.bind(this, 'left')}
+                onLongPressEnd={onButtonPress.bind(this, 'stop')}
+              >
+                Left
+              </LongPressButton>
+              <Button onClick={onButtonPress.bind(this, 'home')}>HOME</Button>
+              <LongPressButton
+                onLongPress={onButtonPress.bind(this, 'right')}
+                onLongPressEnd={onButtonPress.bind(this, 'stop')}
+              >
+                RIGHT
+              </LongPressButton>
+            </div>
+            <div class='row'>
+              <div className='button'></div>
+              <LongPressButton
+                onLongPress={onButtonPress.bind(this, 'down')}
+                onLongPressEnd={onButtonPress.bind(this, 'stop')}
+              >
+                Down
+              </LongPressButton>
+              <div className='button'></div>
+            </div>
+          </div>
         </div>
-        <button
-          className='joystick-button down'
-          onClick={() => onButtonPress('down')}
-        >
-          ↓
-        </button>
+      </div>
+      <div style={{}}>
+        {allCamera ? (
+          allCamUrl.length != 0 &&
+          allCamUrl.map((url, i) => <img id={i} style={imageStyle} src={url} />)
+        ) : (
+          <img
+            style={{
+              width: '1280px',
+              height: '720px',
+            }}
+            onDoubleClick={handleDoubleClick}
+            src={camUrl}
+          />
+        )}
       </div>
     </div>
   );
