@@ -68,20 +68,20 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
     <div style={innerStyle}>
       <ModuleTray allowMultipleSelection vertical workbench={workbench}>
         <Module id='map' icon={<Map />} label={t('view.map')} component='map' />
-        <Module
+        {/* <Module
           id='layers'
           icon={<Layers />}
           label={t('view.layer-list')}
           component='layer-list'
-        />
-        {hasFeature('mapFeatures') && (
+        /> */}
+        {/* {hasFeature('mapFeatures') && (
           <Module
             id='features'
             icon={<ShapeLine />}
             label={t('view.feature-list')}
             component='feature-list'
           />
-        )}
+        )} */}
         <Module
           id='uavs'
           icon={<Flight />}
@@ -90,38 +90,38 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
         />
         <hr />
         {/* Do not use a single React fragment here for the next section; it would confuse `react-flexible-workbench` */}
-        <Module
+        {/* <Module
           id='camera'
           icon={<CameraAltRounded />}
           label={t('view.camera')}
           component='camera'
-        />
+        /> */}
         <Module
           id='spare-drone'
           icon={<CameraAltRounded />}
           label='Video Panel'
           component='spare'
         />
-        <Module
+        {/* <Module
           id='locations'
           icon={<Place />}
           label={t('view.saved-location-list')}
           component='saved-location-list'
-        />
-        <Module
+        /> */}
+        {/* <Module
           id='vtol'
           icon={<SwarmIcon />}
           label={'VTOL Swarm'}
           component='vtol'
-        />
-        {hasShowControl && (
+        /> */}
+        {/* {hasShowControl && (
           <Module
             id='show'
             icon={<Grain />}
             label={t('view.show-control')}
             component='show-control'
           />
-        )}
+        )} */}
       </ModuleTray>
     </div>
     {isOpen && (

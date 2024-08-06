@@ -22,20 +22,7 @@ const droneImages = {
   [Severity.CRITICAL]: DroneImageError,
 };
 
-// const RVTImage = ['21', '22', '23', '24'];
-
-const RVTImage = [
-  { uavid: '21', name: 'Team 1' },
-  { uavId: '22', name: 'Team 2' },
-  { uavId: '23', name: 'Team 3' },
-  { uavId: '24', name: 'Team 4' },
-  { uavId: '25', name: 'Ground Station' },
-];
-
-function getNameByUavId(uavId) {
-  const foundObject = RVTImage.find((item) => item.uavId === uavId);
-  return foundObject ? foundObject.name : 'Not found';
-}
+const RVTImage = ['21', '22', '23', '24'];
 
 /**
  * Feature that represents an UAV on an OpenLayers map.
@@ -259,7 +246,7 @@ export default class UAVFeature extends Feature {
           : '12px sans-serif',
         offsetY: 24,
         text: RVTImage.includes(this.uavId)
-          ? getNameByUavId('21')
+          ? 'RVT 1'
           : this.uavId || 'undefined',
         textAlign: 'center',
       }),
