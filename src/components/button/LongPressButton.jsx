@@ -6,6 +6,7 @@ const LongPressButton = ({
   onLongPressEnd,
   children,
   onClick,
+  disabled,
 }) => {
   const [isPressing, setIsPressing] = useState(false);
   const timerRef = useRef(null);
@@ -42,6 +43,7 @@ const LongPressButton = ({
       onTouchEnd={handleMouseUp}
       variant='text'
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </Button>

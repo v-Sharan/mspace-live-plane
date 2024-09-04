@@ -28,10 +28,13 @@ const { reducer, actions } = createSlice({
     setSelectedTool(state, action: PayloadAction<Tool>) {
       state.selectedTool = action.payload;
     },
+    setUserMarker(state) {
+      state.selectedTool = Tool.SELECT;
+    },
   },
 });
 
-export const { setSelectedTool } = actions;
+export const { setSelectedTool, setUserMarker } = actions;
 
 // TODO: Change to `state: RootState` when the Redux store type is available
 export const getSelectedTool = (state: {

@@ -23,7 +23,6 @@ export const getFeaturesInOrder = createSelector(
   (state) => state.features,
   selectOrdered
 );
-
 /**
  * Returns the object representing a feature given its ID, or undefined
  * if there is no such feature.

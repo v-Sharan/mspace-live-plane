@@ -69,7 +69,7 @@ import { ImageLayer } from './layers/image';
 import { closeOnLoadImage } from '~/features/show/slice';
 import store from '~/store';
 import { useSelector, useDispatch } from 'react-redux';
-import { UAVTraceLayer } from './layers/uavtrace';
+import { setUserMarker } from '~/features/map/tools';
 /* ********************************************************************** */
 
 /**
@@ -648,6 +648,7 @@ class MapViewPresentation extends React.Component {
       feature.owner = 'user';
       config.map.features.onCreate(feature);
       this.props.dispatch(addFeature(feature));
+      this.props.dispatch(setUserMarker());
     } catch (error) {
       handleError(error);
     }

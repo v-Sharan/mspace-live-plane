@@ -133,8 +133,6 @@ const styleForFeature = (
   const styles = [];
   const radius = 6;
 
-  console.log(labelStyle);
-
   switch (type) {
     case FeatureType.POINTS:
       styles.push(
