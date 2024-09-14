@@ -65,7 +65,7 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 import 'ol/ol.css';
-import { ImageLayer } from './layers/image';
+import { ImageLayer, getFileAsBase64 } from './layers/image';
 import { closeOnLoadImage } from '~/features/show/slice';
 import store from '~/store';
 import { useSelector, useDispatch } from 'react-redux';
@@ -154,24 +154,21 @@ const MapViewLayersPresentation = ({
   if (imageName.length != 0) {
     for (const name in imageName) {
       const location = imageName[name].split('.jpg')[0].split('_');
-
-      const Cutomlayer = {
-        parameters: {
-          image: {
-            data: `http://${ground_ip}:8000/get_image/${imageName[name]}`,
-          },
-          transform: {
-            position: { lon: location[10], lat: location[9] },
-            angle: 0,
-            scale: 5,
-          },
-        },
-      };
-      renderedLayers.push(<ImageLayer layer={Cutomlayer} zIndex={6} />);
     }
+    const Cutomlayer = {
+      parameters: {
+        image: {
+          data: `http://${ground_ip}:8000/get_image/${imageName[name]}`,
+        },
+        transform: {
+          position: { lon: location[10], lat: location[9] },
+          angle: 0,
+          scale: 5,
+        },
+      },
+    };
+    renderedLayers.push(<ImageLayer layer={Cutomlayer} zIndex={6} />);
   }
-
-  // <UAVTraceLayer />
 
   return renderedLayers;
 };

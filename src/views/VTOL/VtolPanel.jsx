@@ -24,34 +24,32 @@ import {
   DownloadMissionTrue,
 } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { setSelectedTool, setUserMarker } from '~/features/map/tools';
-import { removeFeaturesByIds } from '~/features/map-features/slice';
+import { setSelectedTool } from '~/features/map/tools';
+import { getUAVIdList } from '~/features/uavs/selectors';
 
 import { Tool } from '~/views/map/tools';
 
 const VtolPanel = ({
   selectedUAVIds,
   onToolSelected,
-  onRemoveFeature,
   features,
   dispatch,
+  ids,
 }) => {
   const [data, setData] = useState({
     numofdrone: 0,
     turn: '',
     skip: 0,
     uavid: 0,
-    missiontype: 'dynamic type',
+    missiontype: 'fixed type',
     coverage: 1000,
     gridspacing: 50,
   });
 
-  const [target, setTarget] = useState(false);
-
   useEffect(() => {
     if (!selectedUAVIds?.length) return;
     setData((prev) => {
-      return { ...prev, uavid: parseInt(selectedUAVIds[0]) };
+      return { ...prev, uavid: selectedUAVIds[0] };
     });
   }, [selectedUAVIds]);
 
@@ -59,12 +57,6 @@ const VtolPanel = ({
     let body = {};
     const coords = features.filter((item) => item.type === 'points');
 
-    if (msg == 'grid') {
-      if (coords.lenght > 0) {
-        const coord = coords[0].points[0];
-        body = { points: [...coord] };
-      }
-    }
     if (msg == 'uploadmission') {
       if (data.numofdrone == 0 && data.turn == '') {
         dispatch(
@@ -76,10 +68,26 @@ const VtolPanel = ({
         return;
       }
     }
+    if (msg == 'grid') {
+      if (coords.length > 0) {
+        const coord = coords[0].points[0];
+        body = { points: [...coord] };
+      }
+      if (data.numofdrone == 0) {
+        dispatch(
+          showNotification({
+            message: `Failed to send message ${msg} due to invalid inputs`,
+            semantics: MessageSemantics.ERROR,
+          })
+        );
+        return;
+      }
+    }
     try {
       const res = await messageHub.sendMessage({
         type: 'X-VTOL-MISSION',
         message: msg,
+        ids,
         ...data,
         ...body,
       });
@@ -233,18 +241,10 @@ const VtolPanel = ({
       >
         <Button
           onClick={() => {
-            if (target) {
-              onRemoveFeature(
-                features.filter((item) => item.type === 'points')[0].id
-              );
-              setTarget(false);
-              return;
-            }
             dispatch(onToolSelected(Tool.DRAW_POINT));
-            setTarget(true);
           }}
         >
-          {target ? 'Clear Target' : 'Add Target'}
+          Add Target
         </Button>
         <FormControl variant='standard'>
           <InputLabel htmlFor='skip'>Coverage in Meters</InputLabel>
@@ -339,14 +339,10 @@ export default connect(
   (state) => ({
     selectedUAVIds: getSelectedUAVIds(state),
     features: getFeaturesInOrder(state),
+    ids: getUAVIdList(state),
   }),
   (dispatch) => ({
     onToolSelected: setSelectedTool,
     dispatch,
-    onRemoveFeature(featureId) {
-      if (featureId) {
-        dispatch(removeFeaturesByIds([featureId]));
-      }
-    },
   })
 )(VtolPanel);

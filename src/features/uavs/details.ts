@@ -53,7 +53,7 @@ const { actions, reducer } = createSlice({
     }),
 
     DownloadMissionTrue: noPayload<UAVDetailsSliceState>((state) => {
-      state.LoadMission = true;
+      state.LoadMission = !state.LoadMission;
     }),
 
     DownloadMissionFalse: noPayload<UAVDetailsSliceState>((state) => {

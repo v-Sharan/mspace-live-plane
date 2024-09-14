@@ -12,6 +12,11 @@ import BatteryIndicator from '~/components/BatteryIndicator';
 import StatusPill from '~/components/StatusPill';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
+import store from '~/store';
+import { MessageSemantics } from '~/features/snackbar/types';
+import { showNotification } from '~/features/snackbar/slice';
+
+const { dispatch } = store;
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -98,12 +103,20 @@ const ComplexAvatar = ({
   text,
   textSemantics,
   airspeed,
+  mode,
 }) => {
   const classes = useStyles();
 
   if (status === Status.INFO) {
     status = Status.SUCCESS;
   }
+
+  // dispatch(
+  //   showNotification({
+  //     message: mode,
+  //     semantics: MessageSemantics.SUCCESS,
+  //   })
+  // );
 
   const effectiveHint = hint || (label === undefined || label === id ? '' : id);
 
@@ -142,6 +155,7 @@ const ComplexAvatar = ({
       {airspeed && (
         <StatusPill status={textSemantics}>{airspeed} m/s</StatusPill>
       )}
+      {mode && <StatusPill status={textSemantics}>{mode}</StatusPill>}
       {batteryStatus && (
         <BatteryIndicator formatter={batteryFormatter} {...batteryStatus} />
       )}

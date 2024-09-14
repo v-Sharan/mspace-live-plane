@@ -38,7 +38,7 @@ AutoSaveOnBlur.propTypes = {
   save: PropTypes.func,
 };
 
-const getFileAsBase64 = async (file) =>
+export const getFileAsBase64 = async (file) =>
   new Promise((resolve) => {
     const fileReader = new FileReader();
     fileReader.addEventListener('load', () => {

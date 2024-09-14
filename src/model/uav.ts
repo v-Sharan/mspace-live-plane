@@ -193,6 +193,13 @@ export default class UAV {
   }
 
   /**
+   * Returns the mode of the UAV, if known.
+   */
+  get _mode(): string | undefined {
+    return this.mode;
+  }
+
+  /**
    * Returns the most severe error code from the list of error codes sent by the
    * UAV, or zero if there are no errors.
    */

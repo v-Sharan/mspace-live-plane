@@ -13,9 +13,6 @@ import { showNotification } from '~/features/snackbar/slice';
 import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 import store from '~/store';
-import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
-import { getUAVIdList } from '~/features/uavs/selectors';
-
 import makeLogger from './logging';
 
 const logger = makeLogger('messaging');
@@ -171,7 +168,7 @@ export const takeoffUAVs = performMassOperation({
 
 export const guidedMode = performMassOperation({
   type: 'X-UAV-GUIDED',
-  name: 'Guided mode command',
+  name: 'QLoiter mode command',
 });
 
 export const AutoMode = performMassOperation({

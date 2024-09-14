@@ -721,6 +721,7 @@ export function getSingleUAVStatusSummary(uav) {
   let text;
   let textSemantics;
   let airspeed;
+  let mode;
 
   if (!uav) {
     // No such UAV
@@ -728,6 +729,7 @@ export function getSingleUAVStatusSummary(uav) {
     text = 'missing';
     textSemantics = Status.WARNING;
     airspeed = 0;
+    mode = '';
   } else if (uav.errors && uav.errors.length > 0) {
     // UAV has some status information that it wishes to report
     maxError = Math.max(...uav.errors);
@@ -760,6 +762,10 @@ export function getSingleUAVStatusSummary(uav) {
     airspeed = uav.airspeed.toFixed(2);
   }
 
+  if (uav._mode != '') {
+    mode = uav.mode;
+  }
+
   // We allow "normal" and "informational" messages to be overridden by the
   // "gone" or "no telemetry" (inactive) warnings
   if (textSemantics === Status.SUCCESS || textSemantics === Status.INFO) {
@@ -790,6 +796,7 @@ export function getSingleUAVStatusSummary(uav) {
     textSemantics,
     batteryStatus: uav ? uav.battery : undefined,
     airspeed,
+    mode: uav && uav.mode,
   };
 }
 /* eslint-enable complexity */
