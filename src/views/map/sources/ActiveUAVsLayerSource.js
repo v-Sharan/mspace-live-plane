@@ -237,7 +237,9 @@ class ActiveUAVsLayerSource extends React.Component {
       // Set or update the heading of the feature
       if (uav.heading !== undefined) {
         feature.heading = uav.heading;
-        feature.gimbalHeading = uav.heading;
+      }
+      if (uav.gimbalHeading !== undefined) {
+        feature.gimbalHeading = uav.gimbalHeading;
       }
 
       feature.status = getSingleUAVStatusLevel(uav);

@@ -54,6 +54,7 @@ export default class UAV {
   localPosition?: Coordinate3D;
   mode?: string;
   _airspeed?: number;
+  _gimbalHeading?: number;
 
   /**
    * Constructor.
@@ -89,6 +90,7 @@ export default class UAV {
     this.localPosition = undefined;
     this.mode = undefined;
     this._airspeed = undefined;
+    this._gimbalHeading = undefined;
   }
 
   /**
@@ -110,6 +112,13 @@ export default class UAV {
    */
   get airspeed(): number | undefined {
     return this._airspeed;
+  }
+
+  /**
+   * Returns the airspeed of the drone
+   */
+  get gimbalHeading(): number | undefined {
+    return this._gimbalHeading;
   }
 
   /**
@@ -235,6 +244,7 @@ export default class UAV {
       light,
       debug,
       airspeed,
+      gimbalHeading,
     } = status;
     let errorList: ErrorCode[];
     let updated = false;
@@ -266,6 +276,11 @@ export default class UAV {
 
     if (heading !== undefined && this.heading !== heading / 10) {
       this.heading = heading / 10; /* conversion to degrees */
+      updated = true;
+    }
+
+    if (gimbalHeading !== undefined) {
+      this._gimbalHeading = gimbalHeading; /* conversion to degrees */
       updated = true;
     }
 
@@ -365,6 +380,7 @@ export default class UAV {
       localPosition,
       position,
       airspeed: this._airspeed,
+      gimbalHeading: this.gimbalHeading,
     };
   }
 }

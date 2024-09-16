@@ -111,13 +111,6 @@ const ComplexAvatar = ({
     status = Status.SUCCESS;
   }
 
-  // dispatch(
-  //   showNotification({
-  //     message: mode,
-  //     semantics: MessageSemantics.SUCCESS,
-  //   })
-  // );
-
   const effectiveHint = hint || (label === undefined || label === id ? '' : id);
 
   return (

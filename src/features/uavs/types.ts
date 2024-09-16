@@ -44,6 +44,7 @@ export type StoredUAV = {
   mode?: string;
   position?: GPSPosition;
   airspeed?: number;
+  gimbalHeading?: number;
 };
 
 export enum UAVDetailsDialogTab {
