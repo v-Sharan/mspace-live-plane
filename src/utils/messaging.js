@@ -61,7 +61,51 @@ const processResponses = (
   }
 };
 
-const createConfirmationMessage = (operation, uavs, broadcast) => {
+const processVtolMissionResponses = (
+  commandName,
+  responses,
+  { reportSuccess = true, reportFailure = true } = {}
+) => {
+  responses = values(responses);
+
+  const errorCounts = countBy(responses, isError);
+  const numberOfFailures = errorCounts.true || 0;
+  const numberOfSuccesses = responses.length - numberOfFailures;
+
+  let message;
+  let semantics;
+
+  if (numberOfFailures && reportFailure) {
+    semantics = MessageSemantics.ERROR;
+    if (numberOfSuccesses > 1) {
+      message = `${commandName} sent for ${numberOfSuccesses} UAVs, failed for ${numberOfFailures}`;
+    } else if (numberOfSuccesses) {
+      message = `${commandName} sent for one UAV, failed for ${numberOfFailures}`;
+    } else if (numberOfFailures > 1) {
+      message = `${commandName} failed for ${numberOfFailures} UAVs`;
+    } else {
+      message = `${commandName} failed ${responses}`;
+    }
+  } else if (reportSuccess) {
+    semantics = MessageSemantics.SUCCESS;
+    if (numberOfSuccesses > 1) {
+      message = `${commandName} sent for ${numberOfSuccesses} UAVs`;
+    } else if (numberOfSuccesses) {
+      message = `${commandName} sent successfully`;
+    }
+  }
+
+  if (message) {
+    store.dispatch(
+      showNotification({
+        message,
+        semantics,
+      })
+    );
+  }
+};
+
+export const createConfirmationMessage = (operation, uavs, broadcast) => {
   const lowercasedOperation = (operation || 'an unknown command').toLowerCase();
   let target;
 
@@ -132,6 +176,51 @@ const performMassOperation =
     }
   };
 
+const performVtolMassOperation =
+  ({
+    type,
+    mapper = undefined,
+    reportFailure = true,
+    reportSuccess = true,
+    skipConfirmation = false,
+  }) =>
+  async (missionmsg, uavs, args) => {
+    // Do not bail out early if uavs is empty because in the args there might be
+    // an option that intructs the server to do a broadcast to all UAVs.
+
+    try {
+      const finalArgs = mapper ? mapper(args) : args;
+      const isBroadcast = Boolean(finalArgs?.transport?.broadcast);
+      const needsConfirmation =
+        !skipConfirmation &&
+        shouldConfirmUAVOperation(store.getState(), uavs, isBroadcast);
+
+      if (needsConfirmation) {
+        // This operation needs confirmation, so instead of executing it, show
+        // a confirmation dialog
+        const confirmation = await store.dispatch(
+          showConfirmationDialog(
+            createConfirmationMessage(missionmsg, uavs, isBroadcast),
+            { title: 'Confirmation needed' }
+          )
+        );
+
+        if (!confirmation) {
+          return;
+        }
+      }
+      let msg = { type, ids: uavs, ...finalArgs };
+      const responses = await messageHub.startAsyncOperation(msg);
+      processVtolMissionResponses(missionmsg, responses, {
+        reportFailure,
+        reportSuccess,
+      });
+    } catch (error) {
+      console.error(error);
+      logger.error(`${missionmsg}: ${String(error)}`);
+    }
+  };
+
 export const flashLightOnUAVs = performMassOperation({
   type: 'UAV-SIGNAL',
   name: 'Light signal command',
@@ -181,6 +270,16 @@ export const landUAVs = performMassOperation({
   name: 'Landing command',
 });
 
+export const startCaptureCam = performMassOperation({
+  type: 'X-UAV-START-CAPTURE',
+  name: 'Starts the Detection',
+});
+
+export const stopCaptureCam = performMassOperation({
+  type: 'X-UAV-stop-CAPTURE',
+  name: 'Stops the Detection',
+});
+
 export const positionHoldUAVs = performMassOperation({
   type: 'UAV-HOVER',
   name: 'Position hold command',
@@ -226,6 +325,11 @@ const moveUAVsLowLevel = performMassOperation({
 
   // Moving UAVs is such a common feature that we skip any confirmation dialogs
   skipConfirmation: true,
+});
+
+const vtolMission = performVtolMassOperation({
+  type: 'X-VTOL-UPLOAD-MISSION',
+  name: 'VTOL MISSION UPLOAD COMMAND',
 });
 
 export const moveUAVs = (uavIds, { target, ...rest }) => {
@@ -285,6 +389,9 @@ const OPERATION_MAP = {
   guided: guidedMode,
   automode: AutoMode,
   takeOff: takeoffUAVs,
+  vtolMission: vtolMission,
+  startCaptureCam,
+  stopCaptureCam,
 };
 
 /**

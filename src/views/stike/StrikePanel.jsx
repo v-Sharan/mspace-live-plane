@@ -34,7 +34,7 @@ const StrikePanel = () => {
   };
 
   const handleAbort = () => {
-    console.log('About');
+    console.log('Abort');
   };
 
   return (
@@ -59,19 +59,6 @@ const StrikePanel = () => {
                 ))}
             </Select>
           </FormControl>
-          {/* <FormControl fullWidth variant='standard'>
-            <InputLabel id='drone-id'>Heading:</InputLabel>
-            <Input
-              style={{ padding: 5 }}
-              type='number'
-              value={MSG.heading}
-              onChange={({ target: { value } }) =>
-                setMSG((prev) => {
-                  return { ...prev, heading: value };
-                })
-              }
-            />
-          </FormControl> */}
         </Box>
         <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <FormControl fullWidth variant='standard'>

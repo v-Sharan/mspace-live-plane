@@ -6,7 +6,6 @@ import {
   FormControl,
   InputLabel,
 } from '@material-ui/core';
-import './index.css';
 import messageHub from '~/message-hub';
 import store from '~/store';
 import { showNotification } from '~/features/snackbar/actions';

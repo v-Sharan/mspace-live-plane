@@ -239,6 +239,11 @@ export function getGeofenceActionWithValidation(state) {
 export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
 
 /**
+ * Gets the ID of the polygon that is to be used as a initial mission.
+ */
+export const getInitialMissionId = (state) => state.mission.initialMissionId;
+
+/**
  * Gets the coordinates of the polygon that is to be used as a geofence, in
  * world coordinates, or undefined if no geofence polygon is defined.
  */
@@ -268,7 +273,7 @@ export const getGeofenceStatus = createSelector(
     return !hasActiveGeofencePolygon
       ? Status.OFF
       : featuresById[geofencePolygonId].owner === 'show'
-      ? Status.SUCCESS
-      : Status.WARNING;
+        ? Status.SUCCESS
+        : Status.WARNING;
   }
 );

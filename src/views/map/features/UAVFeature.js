@@ -28,7 +28,7 @@ const droneImages = {
   [Severity.CRITICAL]: DroneImageError,
 };
 
-const RVTImage = ['21', '22', '23', '24'];
+const RVTImage = ['26', '27', '28', '29'];
 
 /**
  * Feature that represents an UAV on an OpenLayers map.
@@ -205,18 +205,18 @@ export default class UAVFeature extends Feature {
     });
     this._iconImage = iconImage;
 
-    const gimbalIconImage = new Icon({
-      src: GimbalPolygon,
-      rotateWithView: true,
-      rotation: this._gimbalHeadingToRotation(),
-      snapToPixel: false,
-    });
-    this._gimbalIcon = gimbalIconImage;
+    // const gimbalIconImage = new Icon({
+    //   src: GimbalPolygon,
+    //   rotateWithView: true,
+    //   rotation: this._gimbalHeadingToRotation(),
+    //   snapToPixel: false,
+    // });
+    // this._gimbalIcon = gimbalIconImage;
 
     const iconStyle = new Style({ image: iconImage });
-    const gimbalIconStyle = new Style({ image: gimbalIconImage });
+    // const gimbalIconStyle = new Style({ image: gimbalIconImage });
     styles.push(iconStyle);
-    styles.push(gimbalIconStyle);
+    // styles.push(gimbalIconStyle);
 
     // Selection image
 

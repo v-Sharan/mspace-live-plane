@@ -721,7 +721,6 @@ export function getSingleUAVStatusSummary(uav) {
   let text;
   let textSemantics;
   let airspeed;
-  let mode;
 
   if (!uav) {
     // No such UAV
@@ -729,7 +728,6 @@ export function getSingleUAVStatusSummary(uav) {
     text = 'missing';
     textSemantics = Status.WARNING;
     airspeed = 0;
-    mode = '';
   } else if (uav.errors && uav.errors.length > 0) {
     // UAV has some status information that it wishes to report
     maxError = Math.max(...uav.errors);
@@ -758,12 +756,8 @@ export function getSingleUAVStatusSummary(uav) {
     textSemantics = Status.SUCCESS;
   }
 
-  if (typeof uav.airspeed == 'number') {
+  if (typeof uav?.airspeed == 'number') {
     airspeed = uav.airspeed.toFixed(2);
-  }
-
-  if (uav._mode != '') {
-    mode = uav.mode;
   }
 
   // We allow "normal" and "informational" messages to be overridden by the

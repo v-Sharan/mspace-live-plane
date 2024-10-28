@@ -14,7 +14,10 @@ import {
   Divider,
   MenuItem,
 } from '@material-ui/core';
-import { getFeaturesInOrder } from '~/features/map-features/selectors';
+import {
+  getFeaturesInOrder,
+  getFeatureById,
+} from '~/features/map-features/selectors';
 import messageHub from '~/message-hub';
 import { MessageSemantics } from '~/features/snackbar/types';
 import { showNotification } from '~/features/snackbar/slice';
@@ -26,8 +29,14 @@ import {
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { setSelectedTool } from '~/features/map/tools';
 import { getUAVIdList } from '~/features/uavs/selectors';
-
+import { getInitialMissionId } from '~/features/mission/selectors';
 import { Tool } from '~/views/map/tools';
+import { createUAVOperationThunks } from '~/utils/messaging';
+import { bindActionCreators } from '@reduxjs/toolkit';
+import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
+import { isBroadcast } from '~/features/session/selectors';
+import { showConfirmationDialog } from '~/features/prompt/actions';
+import { createConfirmationMessage } from '~/utils/messaging';
 
 const VtolPanel = ({
   selectedUAVIds,
@@ -35,6 +44,8 @@ const VtolPanel = ({
   features,
   dispatch,
   ids,
+  initalFeature,
+  broadcast,
 }) => {
   const [data, setData] = useState({
     numofdrone: 0,
@@ -53,27 +64,49 @@ const VtolPanel = ({
     });
   }, [selectedUAVIds]);
 
+  const { startCaptureCam } = bindActionCreators(
+    createUAVOperationThunks({
+      getTargetedUAVIds(state) {
+        return broadcast ? getUAVIdList(state) : selectedUAVIds;
+      },
+
+      getTransportOptions(state) {
+        const result = {
+          channel: getPreferredCommunicationChannelIndex(state),
+        };
+
+        if (broadcast) {
+          result.broadcast = true;
+          result.ignoreIds = true;
+        }
+
+        return result;
+      },
+    }),
+    dispatch
+  );
+
+  // const handleconfirm = async () => {
+  //   const confirm = await dispatch(
+  //     showConfirmationDialog(
+  //       createConfirmationMessage('Msg', selectedUAVIds, isBroadcast),
+  //       { title: 'Confirmation needed' }
+  //     )
+  //   );
+  //   dispatch(
+  //     showNotification({
+  //       message: `${confirm}`,
+  //       semantics: MessageSemantics.SUCCESS,
+  //     })
+  //   );
+  // };
+
   const handleMsg = async (msg) => {
     let body = {};
+    const initialMission = initalFeature();
     const coords = features.filter((item) => item.type === 'points');
-
     if (msg == 'uploadmission') {
       if (data.numofdrone == 0 && data.turn == '') {
-        dispatch(
-          showNotification({
-            message: `Failed to send message ${`${msg}`} due to invalid inputs`,
-            semantics: MessageSemantics.ERROR,
-          })
-        );
-        return;
-      }
-    }
-    if (msg == 'grid') {
-      if (coords.length > 0) {
-        const coord = coords[0].points[0];
-        body = { points: [...coord] };
-      }
-      if (data.numofdrone == 0) {
         dispatch(
           showNotification({
             message: `Failed to send message ${msg} due to invalid inputs`,
@@ -82,12 +115,51 @@ const VtolPanel = ({
         );
         return;
       }
+      if (data.missiontype == 'fixed type') {
+        if (initialMission.length > 0) {
+          body = { mission: initialMission };
+        } else {
+          dispatch(
+            showNotification({
+              message: `Failed to send message ${msg} due to Initial Mission is Empty or Mission Type is not Fixed`,
+              semantics: MessageSemantics.ERROR,
+            })
+          );
+          return;
+        }
+      }
     }
+
+    if (coords.length > 0) {
+      const coord = coords[0].points[0];
+      body = { ...body, points: [...coord] };
+    }
+    if (data.numofdrone == 0) {
+      dispatch(
+        showNotification({
+          message: `Failed to send message ${msg} due to Number of drones is ${data.numofdrone}`,
+          semantics: MessageSemantics.ERROR,
+        })
+      );
+      return;
+    }
+
+    if (msg == 'spilt_mission') {
+      const coord = coords.map((item) => item.points[0]);
+      body = { center_latlon: coord };
+    }
+    dispatch(
+      showNotification({
+        message: data.numofdrone,
+        semantics: MessageSemantics.DEFAULT,
+      })
+    );
     try {
       const res = await messageHub.sendMessage({
         type: 'X-VTOL-MISSION',
         message: msg,
         ids,
+        selected: selectedUAVIds,
         ...data,
         ...body,
       });
@@ -111,18 +183,12 @@ const VtolPanel = ({
           );
           return;
         }
-        dispatch(
-          showNotification({
-            message: `${res.body.message?.length}`,
-            semantics: MessageSemantics.ERROR,
-          })
-        );
         dispatch(setMissionFromServer(res.body.message));
       }
     } catch (e) {
       dispatch(
         showNotification({
-          message: `${msg} ${e?.message} Command is Failed`,
+          message: `${msg} ${e?.message}`,
           semantics: MessageSemantics.ERROR,
         })
       );
@@ -340,6 +406,13 @@ export default connect(
     selectedUAVIds: getSelectedUAVIds(state),
     features: getFeaturesInOrder(state),
     ids: getUAVIdList(state),
+    broadcast: isBroadcast(state),
+    initalFeature: () => {
+      const initialMissionId = getInitialMissionId(state);
+      const feature = getFeatureById(state, initialMissionId);
+      if (feature === undefined) return [];
+      return feature?.points;
+    },
   }),
   (dispatch) => ({
     onToolSelected: setSelectedTool,

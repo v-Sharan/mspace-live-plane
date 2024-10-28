@@ -346,7 +346,7 @@ class PendingCommandExecution {
     this._resumeCallback = onResume;
 
     if (timeout > 0) {
-      this._timeoutInMsec = timeout * 1000;
+      this._timeoutInMsec = timeout * 10000;
       this._timeoutId = setTimeout(this._onTimeout, this._timeoutInMsec);
       this._timeoutCallback = onTimeout;
     } else {

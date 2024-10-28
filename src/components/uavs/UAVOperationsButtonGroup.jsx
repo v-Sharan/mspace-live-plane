@@ -5,28 +5,21 @@ import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
 import Clear from '@material-ui/icons/Clear';
 import Delete from '@material-ui/icons/Delete';
-import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import Assignment from '@material-ui/icons/Assignment';
-import FlightLand from '@material-ui/icons/FlightLand';
 import Home from '@material-ui/icons/Home';
-import PositionHold from '@material-ui/icons/Flag';
-import Moon from '@material-ui/icons/NightsStay';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
 import Refresh from '@material-ui/icons/Refresh';
 import GuidedMode from '@material-ui/icons/Bookmark';
 import AutoMode from '@material-ui/icons/Autorenew';
-import { changeTakeOffAlt } from '~/features/uav-control/slice';
 import { TooltipWithContainerFromContext as Tooltip } from '~/containerContext';
 
 import Colors from '~/components/colors';
 import ToolbarDivider from '~/components/ToolbarDivider';
-import Bolt from '~/icons/Bolt';
 
 import {
   requestRemovalOfUAVsByIds,
@@ -36,8 +29,6 @@ import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { createUAVOperationThunks } from '~/utils/messaging';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
-import { Input } from '@material-ui/core';
-import { getTakeOff } from '../../utils/messaging';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -53,25 +44,19 @@ const UAVOperationsButtonGroup = ({
   selectedUAVIds,
   size,
   startSeparator,
-  TakeoffChangeFunc,
-  alt,
   t,
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   const {
-    land,
     reset,
     returnToHome,
     shutdown,
-    sleep,
     turnMotorsOff,
     turnMotorsOn,
-    wakeUp,
     guided,
     automode,
-    takeOff,
   } = bindActionCreators(
     createUAVOperationThunks({
       getTargetedUAVIds(state) {
@@ -289,9 +274,7 @@ UAVOperationsButtonGroup.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({
-    alt: getTakeOff(state),
-  }),
+  (state) => ({}),
   // mapDispatchToProps
   (dispatch) => ({
     ...bindActionCreators(
@@ -303,8 +286,5 @@ export default connect(
       dispatch
     ),
     dispatch,
-    TakeoffChangeFunc(alt) {
-      dispatch(changeTakeOffAlt(alt));
-    },
   })
 )(withTranslation()(UAVOperationsButtonGroup));

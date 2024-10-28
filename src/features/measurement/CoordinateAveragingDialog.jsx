@@ -9,6 +9,7 @@ import BearingCalculator from './BearingCalculator';
 import CoordinateAveragingDialogToolbar from './CoordinateAveragingDialogToolbar';
 import MeasurementList from './MeasurementList';
 import { closeAveragingDialog } from './slice';
+import BackgroundHint from '@skybrush/mui-components/lib/BackgroundHint';
 
 /**
  * Presentation component for the dialog that allows the user to take a
@@ -26,14 +27,13 @@ const CoordinateAveragingDialog = ({ onClose, open }) => (
       <Box flex={1}>
         <MeasurementList />
       </Box>
-      {/*
+
       <Box width={240}>
         <MeasurementList />
       </Box>
       <Box flex={1}>
         <BackgroundHint text='Map component goes here' />
       </Box>
-      */}
     </Box>
     <Box className='bottom-bar' textAlign='center' py={1}>
       <BearingCalculator />

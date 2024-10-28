@@ -47,8 +47,13 @@ import { removeFeaturesByIds } from '~/features/map-features/slice';
 import {
   clearGeofencePolygonId,
   setGeofencePolygonId,
+  setInitialMissionId,
+  clearInitialMissionId,
 } from '~/features/mission/slice';
-import { getGeofencePolygonId } from '~/features/mission/selectors';
+import {
+  getGeofencePolygonId,
+  getInitialMissionId,
+} from '~/features/mission/selectors';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
@@ -65,6 +70,8 @@ class MapContextMenu extends React.Component {
     openUAVDetailsDialog: PropTypes.func,
     removeFeaturesByIds: PropTypes.func,
     setGeofencePolygonId: PropTypes.func,
+    setInitialMissionId: PropTypes.func,
+    clearInitialMissionId: PropTypes.func,
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
     showFlyToTargetDialog: PropTypes.func,
@@ -103,6 +110,7 @@ class MapContextMenu extends React.Component {
           selectedFeatureTypes,
           selectedUAVIds,
           geofencePolygonId,
+          initialMissionId,
         }) => {
           const result = [];
           const hasSelectedUAVs = selectedUAVIds && selectedUAVIds.length > 0;
@@ -135,44 +143,12 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Fly here at altitude…
               </MenuItem>,
-              <MenuItem
-                key='flytotarget'
-                dense
-                onClick={this._moveSelectedUAVsAtGivenAltitude}
-              >
-                <ListItemIcon>
-                  <Flight />
-                </ListItemIcon>
-                Enter Target Lat/Lon
-              </MenuItem>,
               <Divider key='div1' />,
-              <MenuItem key='takeoff' dense onClick={this._takeoffSelectedUAVs}>
-                <ListItemIcon>
-                  <FlightTakeoff />
-                </ListItemIcon>
-                Takeoff
-              </MenuItem>,
-              <MenuItem
-                key='poshold'
-                dense
-                onClick={this._positionHoldSelectedUAVs}
-              >
-                <ListItemIcon>
-                  <PositionHold />
-                </ListItemIcon>
-                Position hold
-              </MenuItem>,
               <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
                 <ListItemIcon>
                   <Home />
                 </ListItemIcon>
                 Return to home
-              </MenuItem>,
-              <MenuItem key='land' dense onClick={this._landSelectedUAVs}>
-                <ListItemIcon>
-                  <FlightLand />
-                </ListItemIcon>
-                Land
               </MenuItem>,
               <Divider key='div2' />,
               <MenuItem
@@ -219,32 +195,30 @@ class MapContextMenu extends React.Component {
             );
           }
 
-          if (this.props.setMapCoordinateSystemOrigin) {
-            result.push(
-              <MenuItem
-                key='setMapCoordinateSystemOrigin'
-                dense
-                onClick={this._setMapCoordinateSystemOrigin}
-              >
-                <ListItemIcon>
-                  <PinDrop />
-                </ListItemIcon>
-                Set map origin here
-              </MenuItem>
-            );
-          }
+          if (hasSingleSelectedFeature) {
+            const InitialMission = ['lineString'];
 
-          if (this.props.setShowCoordinateSystemOrigin) {
+            const featureSuitableForGeofence = InitialMission.includes(
+              selectedFeatureTypes[0]
+            );
+
+            const isCurrentInitialMission =
+              selectedFeatureIds[0] === initialMissionId;
             result.push(
               <MenuItem
-                key='setShowCoordinateSystemOrigin'
+                key='initialMission'
                 dense
-                onClick={this._setShowCoordinateSystemOrigin}
+                disabled={!featureSuitableForGeofence}
+                onClick={
+                  isCurrentInitialMission
+                    ? this._unsetSelectedFeatureAsInitialMission
+                    : this._setSelectedFeatureAsInitialMission
+                }
               >
-                <ListItemIcon>
-                  <Grain />
-                </ListItemIcon>
-                Set show origin here
+                <ListItemIcon>{null}</ListItemIcon>
+                {isCurrentInitialMission
+                  ? 'Clear Intial Misson'
+                  : 'Use as Initial Misson'}
               </MenuItem>
             );
           }
@@ -388,6 +362,13 @@ class MapContextMenu extends React.Component {
     }
   };
 
+  _unsetSelectedFeatureAsInitialMission = (_event, _context) => {
+    const { clearInitialMissionId } = this.props;
+    if (clearInitialMissionId) {
+      clearInitialMissionId();
+    }
+  };
+
   _setSelectedFeatureAsGeofence = (_event, context) => {
     const { setGeofencePolygonId } = this.props;
     const { selectedFeatureIds } = context;
@@ -397,6 +378,17 @@ class MapContextMenu extends React.Component {
     }
 
     // this.props.setFeatureAsGeofence(selectedFeatureIds[0]);
+  };
+
+  _setSelectedFeatureAsInitialMission = (_event, context) => {
+    const { setInitialMissionId } = this.props;
+    const { selectedFeatureIds } = context;
+
+    if (setInitialMissionId) {
+      setInitialMissionId(selectedFeatureIds[0]);
+    }
+
+    // this.props.setFeatureAsInitialMission(selectedFeatureIds[0]);
   };
 
   _openDetailsDialogForSelectedUAVs = (_event, context) => {
@@ -467,12 +459,14 @@ const getContextProvider = createSelector(
   getSelectedFeatureTypes,
   getSelectedUAVIds,
   getGeofencePolygonId,
+  getInitialMissionId,
   (
     selectedFeatureIds,
     selectedFeatureLabels,
     selectedFeatureTypes,
     selectedUAVIds,
-    geofencePolygonId
+    geofencePolygonId,
+    initialMissionId
   ) =>
     (context) => ({
       selectedFeatureIds,
@@ -480,6 +474,7 @@ const getContextProvider = createSelector(
       selectedFeatureTypes,
       selectedUAVIds,
       geofencePolygonId,
+      initialMissionId,
       ...context,
     })
 );
@@ -497,6 +492,8 @@ const MapContextMenuContainer = connect(
     openUAVDetailsDialog,
     removeFeaturesByIds: hasMapFeatures ? removeFeaturesByIds : null,
     setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
+    setInitialMissionId: hasGeofence ? setInitialMissionId : null,
+    clearInitialMissionId: hasGeofence ? clearInitialMissionId : null,
     setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
     setShowCoordinateSystemOrigin: hasShowControl
       ? (coords) =>

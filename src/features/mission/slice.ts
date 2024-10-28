@@ -98,6 +98,11 @@ export type MissionSliceState = ReadonlyDeep<{
 
   /** Action to perform when the geofence is breached */
   geofenceAction: GeofenceAction;
+
+  /**
+   * Whether we are using the initial mission or not
+   */
+  initialMissionId?: FeatureProperties['id'];
 }>;
 
 const initialState: MissionSliceState = {
@@ -113,6 +118,7 @@ const initialState: MissionSliceState = {
   commandsAreBroadcast: false,
   geofencePolygonId: undefined,
   geofenceAction: GeofenceAction.RETURN,
+  initialMissionId: undefined,
 };
 
 const { actions, reducer } = createSlice({
@@ -150,6 +156,12 @@ const { actions, reducer } = createSlice({
      */
     clearGeofencePolygonId: noPayload<MissionSliceState>((state) => {
       state.geofencePolygonId = undefined;
+    }),
+    /**
+     * Clears the id determining the polygon that is to be used as a Mission.
+     */
+    clearInitialMissionId: noPayload<MissionSliceState>((state) => {
+      state.initialMissionId = undefined;
     }),
 
     /**
@@ -266,6 +278,10 @@ const { actions, reducer } = createSlice({
       action: PayloadAction<FeatureProperties['id']>
     ) {
       state.geofencePolygonId = action.payload;
+    },
+
+    setInitialMissionId(state, action: PayloadAction<FeatureProperties['id']>) {
+      state.initialMissionId = action.payload;
     },
 
     /**
@@ -404,6 +420,7 @@ export const {
   adjustMissionMapping,
   cancelMappingEditorSessionAtCurrentSlot,
   clearGeofencePolygonId,
+  clearInitialMissionId,
   clearMapping,
   clearMappingSlot,
   commitMappingEditorSessionAtCurrentSlot,
@@ -413,6 +430,7 @@ export const {
   setCommandsAreBroadcast,
   setGeofenceAction,
   setGeofencePolygonId,
+  setInitialMissionId,
   setMappingLength,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,

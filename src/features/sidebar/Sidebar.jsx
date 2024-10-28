@@ -2,20 +2,12 @@
 
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Alarm from '@material-ui/icons/Alarm';
-// import Apps from '@material-ui/icons/Apps';
-import Assignment from '@material-ui/icons/Assignment';
 import Flight from '@material-ui/icons/Flight';
-import Gamepad from '@material-ui/icons/Gamepad';
-import Grain from '@material-ui/icons/Grain';
 import Layers from '@material-ui/icons/Layers';
 import Map from '@material-ui/icons/Map';
 import Place from '@material-ui/icons/Place';
-import FormatListBulleted from '@material-ui/icons/FormatListBulleted';
-import Storage from '@material-ui/icons/Storage';
-import ThreeDRotation from '@material-ui/icons/ThreeDRotation';
-import WbSunny from '@material-ui/icons/WbSunny';
 import { CameraAltRounded } from '@material-ui/icons';
+import Grain from '@material-ui/icons/Grain';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -23,9 +15,7 @@ import { withTranslation } from 'react-i18next';
 import { Module, ModuleTray, Workbench } from 'react-flexible-workbench';
 import { connect } from 'react-redux';
 
-import LogStatusBadge from '~/components/badges/LogStatusBadge';
 import { areExperimentalFeaturesEnabled } from '~/features/settings/selectors';
-import Antenna from '~/icons/Antenna';
 import ShapeLine from '~/icons/ShapeLine';
 import { hasFeature } from '~/utils/configuration';
 
@@ -96,6 +86,14 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           label={t('view.camera')}
           component='camera'
         /> */}
+        {hasShowControl && (
+          <Module
+            id='show'
+            icon={<Grain />}
+            label={t('view.show-control')}
+            component='show-control'
+          />
+        )}
         <Module
           id='spare-drone'
           icon={<CameraAltRounded />}
@@ -114,14 +112,6 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           label={'VTOL Swarm'}
           component='vtol'
         />
-        {hasShowControl && (
-          <Module
-            id='show'
-            icon={<Grain />}
-            label={t('view.show-control')}
-            component='show-control'
-          />
-        )}
       </ModuleTray>
     </div>
     {isOpen && (

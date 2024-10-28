@@ -13,10 +13,10 @@ import StatusPill from '~/components/StatusPill';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
 import store from '~/store';
-import { MessageSemantics } from '~/features/snackbar/types';
-import { showNotification } from '~/features/snackbar/slice';
+// import { MessageSemantics } from '~/features/snackbar/types';
+// import { showNotification } from '~/features/snackbar/slice';
 
-const { dispatch } = store;
+// const { dispatch } = store;
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -111,8 +111,6 @@ const ComplexAvatar = ({
     status = Status.SUCCESS;
   }
 
-  const effectiveHint = hint || (label === undefined || label === id ? '' : id);
-
   return (
     <>
       <div
@@ -128,8 +126,6 @@ const ComplexAvatar = ({
         >
           <div className={classes.avatarContent}>
             {label === undefined ? id : label}
-            <hr className={classes.hintSeparator} />
-            <div className={classes.hint}>{effectiveHint || '—'}</div>
           </div>
         </SemanticAvatar>
         {progress > 0 && (

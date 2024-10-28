@@ -111,7 +111,7 @@
     "sortByMissionID": "Sort by mission IDs"
   },
   "notifications": {
-    "connectedToSkybrushServer": "Connected to Skybrush server"
+    "connectedToSkybrushServer": "Connected to Dhaksha server"
   },
   "preferences": "Preferences",
   "safetyDialog": {
