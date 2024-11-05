@@ -37,6 +37,7 @@ import { getPreferredCommunicationChannelIndex } from '~/features/mission/select
 import { isBroadcast } from '~/features/session/selectors';
 import { showConfirmationDialog } from '~/features/prompt/actions';
 import { createConfirmationMessage } from '~/utils/messaging';
+import { showError } from '~/features/snackbar/actions';
 
 const VtolPanel = ({
   selectedUAVIds,
@@ -128,20 +129,19 @@ const VtolPanel = ({
           return;
         }
       }
-    }
-
-    if (coords.length > 0) {
-      const coord = coords[0].points[0];
-      body = { ...body, points: [...coord] };
-    }
-    if (data.numofdrone == 0) {
-      dispatch(
-        showNotification({
-          message: `Failed to send message ${msg} due to Number of drones is ${data.numofdrone}`,
-          semantics: MessageSemantics.ERROR,
-        })
-      );
-      return;
+      if (coords.length > 0) {
+        const coord = coords[0].points[0];
+        body = { ...body, points: [...coord] };
+      }
+      if (data.numofdrone == 0) {
+        dispatch(
+          showNotification({
+            message: `Failed to send message ${msg} due to Number of drones is ${data.numofdrone}`,
+            semantics: MessageSemantics.ERROR,
+          })
+        );
+        return;
+      }
     }
 
     if (msg == 'spilt_mission') {
@@ -192,6 +192,16 @@ const VtolPanel = ({
           semantics: MessageSemantics.ERROR,
         })
       );
+    }
+  };
+
+  const handleData = async () => {
+    try {
+      const res = await messageHub.sendMessage({
+        type: 'X-DATA',
+      });
+    } catch (e) {
+      dispatch(showError(e?.message));
     }
   };
 
@@ -395,7 +405,8 @@ const VtolPanel = ({
             }
           />
         </FormControl>
-        <Button onClick={handleMsg.bind(this, 'target')}>SetTarget</Button>
+        <Button onClick={handleData}>SetTarget</Button>
+        {/* <Button onClick={handleMsg.bind(this, 'target')}>SetTarget</Button> */}
       </Box>
     </Box>
   );

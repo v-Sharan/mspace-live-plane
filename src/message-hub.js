@@ -26,6 +26,7 @@ import { semanticsFromSeverity } from './features/snackbar/utils';
 
 import flock from './flock';
 import store from './store';
+import { MessageSemantics } from './features/snackbar/types';
 
 const { dispatch, getState } = store;
 
@@ -88,6 +89,13 @@ messageHub.registerNotificationHandlers({
     flock.handleUAVInformationMessage(message.body, dispatch),
   'X-DBG-REQ': (message) =>
     handleDebugRequest(message.body, messageHub.execute.sendDebugMessage),
+  'X-REQUEST-CONTROL': (message) =>
+    dispatch(
+      showNotification({
+        message: message.body.status.Data,
+        semantics: MessageSemantics.DEFAULT,
+      })
+    ),
 });
 /* eslint-enable object-shorthand */
 

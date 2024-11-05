@@ -55,6 +55,7 @@ export default class UAV {
   mode?: string;
   _airspeed?: number;
   _gimbalHeading?: number;
+  _throttle?: number;
 
   /**
    * Constructor.
@@ -245,6 +246,7 @@ export default class UAV {
       debug,
       airspeed,
       gimbalHeading,
+      throttle,
     } = status;
     let errorList: ErrorCode[];
     let updated = false;
@@ -286,6 +288,11 @@ export default class UAV {
 
     if (light !== undefined && this.light !== light) {
       this.light = light;
+      updated = true;
+    }
+
+    if (throttle !== undefined && this._throttle !== throttle) {
+      this._throttle = throttle;
       updated = true;
     }
 
@@ -381,6 +388,7 @@ export default class UAV {
       position,
       airspeed: this._airspeed,
       gimbalHeading: this.gimbalHeading,
+      throttle: this._throttle,
     };
   }
 }

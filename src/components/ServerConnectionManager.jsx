@@ -511,6 +511,8 @@ async function executeTasksAfterConnection(dispatch, getState) {
     response = await messageHub.sendMessage({ type: 'CLK-INF', ids: clockIds });
     handleClockInformationMessage(response.body, dispatch);
 
+    // response = await messageHub.sendMessage({ type: 'X-REQUEST-CONTROL' });
+
     // Send an OBJ-LIST message to the server to get an up-to-date
     // list of docking stations
     response = await messageHub.sendMessage({
