@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
 import IconButton from '@material-ui/core/IconButton';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import Clear from '@material-ui/icons/Clear';
 import Delete from '@material-ui/icons/Delete';
@@ -29,6 +30,7 @@ import { openUAVDetailsDialog } from '~/features/uavs/details';
 import { createUAVOperationThunks } from '~/utils/messaging';
 import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
+import { updateAutoPanSettings, stopAutoPan } from '~/features/map/autopan';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -45,9 +47,21 @@ const UAVOperationsButtonGroup = ({
   size,
   startSeparator,
   t,
+  autopan,
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
+
+  const handleAutoPan = () => {
+    const uavid = selectedUAVIds[0];
+    if (autopan.isAutoPan && uavid == autopan.uavid) {
+      dispatch(stopAutoPan());
+      return;
+    }
+    dispatch(
+      updateAutoPanSettings({ uavid: selectedUAVIds[0], isAutoPan: true })
+    );
+  };
 
   const {
     reset,
@@ -135,11 +149,14 @@ const UAVOperationsButtonGroup = ({
         </IconButton>
       </Tooltip>
 
-      {/* <Tooltip content={t('UAVOpButtonGrp.land')}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
-          <FlightLand fontSize={fontSize} />
-        </IconButton>
-      </Tooltip> */}
+      <Tooltip content={'Auto Pan'}>
+        <Checkbox
+          disabled={!isSelectionSingle}
+          size={iconSize}
+          onClick={handleAutoPan}
+          checked={selectedUAVIds[0] == autopan.uavid}
+        />
+      </Tooltip>
 
       {/* {!hideSeparators && <ToolbarDivider orientation='vertical' />} */}
 
@@ -244,11 +261,11 @@ const UAVOperationsButtonGroup = ({
           >
             <IconButton
               size={iconSize}
-              onClick={() =>
+              onClick={() => {
                 isSelectionEmpty
                   ? requestRemovalOfUAVsMarkedAsGone()
-                  : requestRemovalOfUAVsByIds(selectedUAVIds)
-              }
+                  : requestRemovalOfUAVsByIds(selectedUAVIds);
+              }}
             >
               <Delete />
             </IconButton>
@@ -274,7 +291,9 @@ UAVOperationsButtonGroup.propTypes = {
 
 export default connect(
   // mapStateToProps
-  (state) => ({}),
+  (state) => ({
+    autopan: state.map.autopan,
+  }),
   // mapDispatchToProps
   (dispatch) => ({
     ...bindActionCreators(

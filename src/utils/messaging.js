@@ -270,16 +270,6 @@ export const landUAVs = performMassOperation({
   name: 'Landing command',
 });
 
-export const startCaptureCam = performMassOperation({
-  type: 'X-UAV-START-CAPTURE',
-  name: 'Starts the Detection',
-});
-
-export const stopCaptureCam = performMassOperation({
-  type: 'X-UAV-stop-CAPTURE',
-  name: 'Stops the Detection',
-});
-
 export const positionHoldUAVs = performMassOperation({
   type: 'UAV-HOVER',
   name: 'Position hold command',
@@ -390,8 +380,6 @@ const OPERATION_MAP = {
   automode: AutoMode,
   takeOff: takeoffUAVs,
   vtolMission: vtolMission,
-  startCaptureCam,
-  stopCaptureCam,
 };
 
 /**

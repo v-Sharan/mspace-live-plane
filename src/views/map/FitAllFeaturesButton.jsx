@@ -50,13 +50,11 @@ class FitAllFeaturesButton extends React.Component {
   componentDidMount() {
     this._bindings.fitAllFeatures = fitAllFeaturesSignal.add(this._handleClick);
     mapReferenceRequestSignal.dispatch(this._onMapReferenceReceived);
-    this._interval = setTimeout(this._handleClick, 2000);
   }
 
   componentWillUnmount() {
     fitAllFeaturesSignal.detach(this._bindings.fitAllFeatures);
     delete this._bindings.fitAllFeatures;
-    clearInterval(this._interval);
   }
 
   render() {
@@ -87,7 +85,7 @@ class FitAllFeaturesButton extends React.Component {
    */
   _getExtentsToZoomTo = (target) => {
     const featureIdFilter = target === 'drones' ? isUavId : undefined;
-
+    console.log(target);
     switch (target) {
       case 'all':
       case 'drones': {
@@ -189,7 +187,6 @@ class FitAllFeaturesButton extends React.Component {
    */
   _onGeolocationError = (error) => {
     const { showError } = this.props;
-
     if (!showError) {
       console.error(error.message);
     } else {

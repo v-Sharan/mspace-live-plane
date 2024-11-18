@@ -11,6 +11,7 @@ import originReducer from './origin';
 import selectionReducer from './selection';
 import toolsReducer from './tools';
 import viewReducer from './view';
+import autopanReducer from './autopan';
 
 /**
  * The reducer function that is responsible for handling all map-related
@@ -22,6 +23,7 @@ const reducer = combineReducers({
   selection: selectionReducer,
   tools: toolsReducer,
   view: viewReducer,
+  autopan: autopanReducer,
 });
 
 export default reducer;

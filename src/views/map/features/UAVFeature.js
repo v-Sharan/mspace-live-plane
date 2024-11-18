@@ -205,13 +205,13 @@ export default class UAVFeature extends Feature {
     });
     this._iconImage = iconImage;
 
-    // const gimbalIconImage = new Icon({
-    //   src: GimbalPolygon,
-    //   rotateWithView: true,
-    //   rotation: this._gimbalHeadingToRotation(),
-    //   snapToPixel: false,
-    // });
-    // this._gimbalIcon = gimbalIconImage;
+    const gimbalIconImage = new Icon({
+      src: GimbalPolygon,
+      rotateWithView: true,
+      rotation: this._gimbalHeadingToRotation(),
+      snapToPixel: false,
+    });
+    this._gimbalIcon = gimbalIconImage;
 
     const iconStyle = new Style({ image: iconImage });
     // const gimbalIconStyle = new Style({ image: gimbalIconImage });

@@ -21,6 +21,7 @@ const hasAMSL = (pos) =>
  * drones if more than one drone is selected, or to the AHL of the drone if a
  * single drone is selected.
  */
+
 export const openFlyToTargetDialogWithCoordinate =
   ({ coords, uavIds }) =>
   (dispatch, getState) => {

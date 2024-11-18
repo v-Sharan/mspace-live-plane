@@ -142,7 +142,9 @@ const FileListItem = ({
                   }}
                 >
                   {details.map((item) => (
-                    <MenuItem value={item.id}>{item.name}</MenuItem>
+                    <MenuItem value={item.id} key={`key-${item.id}`}>
+                      {item.name}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>

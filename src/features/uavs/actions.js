@@ -6,6 +6,7 @@ import flock from '~/flock';
 import { uavIdToGlobalId } from '~/model/identifiers';
 
 import { getSelectedUAVIds, getUAVIdsMarkedAsGone } from './selectors';
+import { showError } from '../snackbar/actions';
 
 /**
  * Action factory that returns a thunk that requests the global flock object
@@ -26,7 +27,7 @@ export const requestRemovalOfUAVsByIds = (selection) => () => {
 export const requestRemovalOfUAVsMarkedAsGone = () => (dispatch, getState) => {
   const selection = getUAVIdsMarkedAsGone(getState());
   if (selection.length > 0) {
-    dispatch(requestRemovalOfUAVsByIds(selection));
+    dispatch(requestRemovalOfUAVsByIds(selection, autopan));
   }
 };
 

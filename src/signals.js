@@ -60,7 +60,7 @@ export function fitCoordinatesIntoMapView(coordinates, options) {
 export function scrollToMapLocation(coordinate, options = {}) {
   const { rotation, zoom, ...rest } = options;
   const signalOptions = {
-    duration: 500,
+    duration: 700,
     ...rest,
   };
 

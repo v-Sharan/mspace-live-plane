@@ -19,6 +19,7 @@ import {
   handleConnectionInformationMessage,
 } from './model/connections';
 import { handleObjectDeletionMessage } from './model/objects';
+import { handleIncomeTargetCNF } from './model/targe';
 
 import { addInboundMessage } from './features/messages/slice';
 import { showError, showNotification } from './features/snackbar/actions';
@@ -89,13 +90,14 @@ messageHub.registerNotificationHandlers({
     flock.handleUAVInformationMessage(message.body, dispatch),
   'X-DBG-REQ': (message) =>
     handleDebugRequest(message.body, messageHub.execute.sendDebugMessage),
-  'X-REQUEST-CONTROL': (message) =>
-    dispatch(
-      showNotification({
-        message: message.body.status.Data,
-        semantics: MessageSemantics.DEFAULT,
-      })
-    ),
+  'X-TARGET-CNF': (message) =>
+    handleIncomeTargetCNF(message.body.coords, dispatch),
+  // dispatch(
+  //   showNotification({
+  //     message: message.body.coords.lat,
+  //     semantics: MessageSemantics.DEFAULT,
+  //   })
+  // ),
 });
 /* eslint-enable object-shorthand */
 

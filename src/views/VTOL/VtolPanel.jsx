@@ -31,13 +31,6 @@ import { setSelectedTool } from '~/features/map/tools';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { getInitialMissionId } from '~/features/mission/selectors';
 import { Tool } from '~/views/map/tools';
-import { createUAVOperationThunks } from '~/utils/messaging';
-import { bindActionCreators } from '@reduxjs/toolkit';
-import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
-import { isBroadcast } from '~/features/session/selectors';
-import { showConfirmationDialog } from '~/features/prompt/actions';
-import { createConfirmationMessage } from '~/utils/messaging';
-import { showError } from '~/features/snackbar/actions';
 
 const VtolPanel = ({
   selectedUAVIds,
@@ -46,7 +39,6 @@ const VtolPanel = ({
   dispatch,
   ids,
   initalFeature,
-  broadcast,
 }) => {
   const [data, setData] = useState({
     numofdrone: 0,
@@ -56,6 +48,9 @@ const VtolPanel = ({
     missiontype: 'fixed type',
     coverage: 1000,
     gridspacing: 50,
+    // type: 'target',
+    lat: 0,
+    lon: 0,
   });
 
   useEffect(() => {
@@ -64,43 +59,6 @@ const VtolPanel = ({
       return { ...prev, uavid: selectedUAVIds[0] };
     });
   }, [selectedUAVIds]);
-
-  const { startCaptureCam } = bindActionCreators(
-    createUAVOperationThunks({
-      getTargetedUAVIds(state) {
-        return broadcast ? getUAVIdList(state) : selectedUAVIds;
-      },
-
-      getTransportOptions(state) {
-        const result = {
-          channel: getPreferredCommunicationChannelIndex(state),
-        };
-
-        if (broadcast) {
-          result.broadcast = true;
-          result.ignoreIds = true;
-        }
-
-        return result;
-      },
-    }),
-    dispatch
-  );
-
-  // const handleconfirm = async () => {
-  //   const confirm = await dispatch(
-  //     showConfirmationDialog(
-  //       createConfirmationMessage('Msg', selectedUAVIds, isBroadcast),
-  //       { title: 'Confirmation needed' }
-  //     )
-  //   );
-  //   dispatch(
-  //     showNotification({
-  //       message: `${confirm}`,
-  //       semantics: MessageSemantics.SUCCESS,
-  //     })
-  //   );
-  // };
 
   const handleMsg = async (msg) => {
     let body = {};
@@ -136,7 +94,7 @@ const VtolPanel = ({
       if (data.numofdrone == 0) {
         dispatch(
           showNotification({
-            message: `Failed to send message ${msg} due to Number of drones is ${data.numofdrone}`,
+            message: `Failed to send message ${msg} due to Number of drones is ${data.numofdrone} equal to 'ZERO'`,
             semantics: MessageSemantics.ERROR,
           })
         );
@@ -148,12 +106,6 @@ const VtolPanel = ({
       const coord = coords.map((item) => item.points[0]);
       body = { center_latlon: coord };
     }
-    dispatch(
-      showNotification({
-        message: data.numofdrone,
-        semantics: MessageSemantics.DEFAULT,
-      })
-    );
     try {
       const res = await messageHub.sendMessage({
         type: 'X-VTOL-MISSION',
@@ -192,16 +144,6 @@ const VtolPanel = ({
           semantics: MessageSemantics.ERROR,
         })
       );
-    }
-  };
-
-  const handleData = async () => {
-    try {
-      const res = await messageHub.sendMessage({
-        type: 'X-DATA',
-      });
-    } catch (e) {
-      dispatch(showError(e?.message));
     }
   };
 
@@ -354,7 +296,7 @@ const VtolPanel = ({
         </FormControl>
         <Button onClick={handleMsg.bind(this, 'grid')}>Submit</Button>
       </Box>
-      <Box style={{ display: 'flex', gap: 5 }}>
+      {/* <Box style={{ display: 'flex', gap: 5 }}>
         <Button
           variant='contained'
           onClick={handleMsg.bind(this, 'start_capture')}
@@ -367,7 +309,7 @@ const VtolPanel = ({
         >
           Stop Capture
         </Button>
-      </Box>
+      </Box> */}
       <Box
         style={{
           display: 'flex',
@@ -405,9 +347,30 @@ const VtolPanel = ({
             }
           />
         </FormControl>
-        <Button onClick={handleData}>SetTarget</Button>
-        {/* <Button onClick={handleMsg.bind(this, 'target')}>SetTarget</Button> */}
+        {/* <Select
+          value={data.type}
+          onChange={({ target }) => {
+            setData((prev) => {
+              return { ...prev, type: target.value };
+            });
+          }}
+        >
+          <MenuItem value={'payload'}>Payload Drop</MenuItem>
+          <MenuItem value={'target'}>Target</MenuItem>
+        </Select> */}
+        <Button
+          onClick={handleMsg.bind(this, 'target')}
+          disabled={data.lat == 0 && data.lon == 0}
+        >
+          Set Target
+        </Button>
       </Box>
+      {/* <Button
+        onClick={handleMsg.bind(this, 'target')}
+        // disabled={data.lat == 0 && data.lon == 0}
+      >
+        Target
+      </Button> */}
     </Box>
   );
 };
@@ -417,7 +380,6 @@ export default connect(
     selectedUAVIds: getSelectedUAVIds(state),
     features: getFeaturesInOrder(state),
     ids: getUAVIdList(state),
-    broadcast: isBroadcast(state),
     initalFeature: () => {
       const initialMissionId = getInitialMissionId(state);
       const feature = getFeatureById(state, initialMissionId);

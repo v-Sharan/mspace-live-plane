@@ -23,6 +23,7 @@ import CameraPanel from './camera';
 import SwarmPanel from './swarm';
 import SpareDronePanel from './spareDrone';
 import VtolPanel from './VTOL';
+import TargetCNF from './gimbalTarget';
 /* MapView not included as it is loaded lazily */
 
 const views = {
@@ -46,6 +47,7 @@ const views = {
   SwarmPanel,
   SpareDronePanel,
   VtolPanel,
+  TargetCNF,
 };
 
 export default views;

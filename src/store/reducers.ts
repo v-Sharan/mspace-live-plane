@@ -58,7 +58,7 @@ import uavControlReducer from '~/features/uav-control/slice';
 import versionCheckReducer from '~/features/version-check/slice';
 import weatherReducer from '~/features/weather/slice';
 import workbenchReducer from '~/features/workbench/slice';
-
+import targetCNFReducer from '~/features/target/slice';
 /**
  * The reducer function that is responsible for handling all dialog-related
  * parts in the global state object.
@@ -121,6 +121,7 @@ const reducer = combineReducers({
   versionCheck: versionCheckReducer,
   weather: weatherReducer,
   workbench: workbenchReducer,
+  targetCNF: targetCNFReducer,
 });
 
 export default reducer;

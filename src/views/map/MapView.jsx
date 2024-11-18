@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { MessageSemantics } from '~/features/snackbar/types';
-import { getPointResolution } from 'ol/proj';
 import { Map, View, control, interaction, withMap } from '@collmot/ol-react';
 import { showNotification } from '~/features/snackbar/slice';
 
@@ -65,11 +64,16 @@ import {
 } from '~/utils/geography';
 import { toDegrees } from '~/utils/math';
 import 'ol/ol.css';
-import { ImageLayer, getFileAsBase64 } from './layers/image';
+import { ImageLayer } from './layers/image';
 import { closeOnLoadImage } from '~/features/show/slice';
 import store from '~/store';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUserMarker } from '~/features/map/tools';
+import { scrollToMapLocation } from '~/signals';
+import UAV from '~/model/uav';
+import { showError } from '~/features/snackbar/actions';
+import { getUAVById } from '~/features/uavs/selectors';
+
 /* ********************************************************************** */
 
 /**
@@ -154,20 +158,20 @@ const MapViewLayersPresentation = ({
   if (imageName.length != 0) {
     for (const name in imageName) {
       const location = imageName[name].split('.jpg')[0].split('_');
+      const Cutomlayer = {
+        parameters: {
+          image: {
+            data: `http://${ground_ip}:8000/get_image/${imageName[name]}`,
+          },
+          transform: {
+            position: { lon: location[10], lat: location[9] },
+            angle: 0,
+            scale: 5,
+          },
+        },
+      };
+      renderedLayers.push(<ImageLayer layer={Cutomlayer} zIndex={6} />);
     }
-    const Cutomlayer = {
-      parameters: {
-        image: {
-          data: `http://${ground_ip}:8000/get_image/${imageName[name]}`,
-        },
-        transform: {
-          position: { lon: location[10], lat: location[9] },
-          angle: 0,
-          scale: 5,
-        },
-      },
-    };
-    renderedLayers.push(<ImageLayer layer={Cutomlayer} zIndex={6} />);
   }
 
   return renderedLayers;
@@ -231,6 +235,41 @@ const MapViewControls = connect(
     ...state.settings.display,
   })
 )(MapViewControlsPresentation);
+
+const AutopanPresentaion = ({ isAutoPan, lat, lon, zoom, angle }) => {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let interval;
+    if (isAutoPan) {
+      interval = setInterval(() => {
+        setCount((prev) => prev + 1);
+      }, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [isAutoPan]);
+
+  useEffect(() => {
+    if (count) {
+      scrollToMapLocation({ lat, lon }, { zoom, rotation: angle });
+    }
+  }, [count]);
+
+  return <div />;
+};
+
+const AutoPanComponent = connect(
+  (state) => {
+    const uav = getUAVById(state, state.map.autopan.uavid);
+    return {
+      ...state.map.autopan,
+      zoom: state.map.view.zoom,
+      angle: getMapViewRotationAngle(state),
+      lat: uav ? uav?.position.lat : 0,
+      lon: uav ? uav?.position.lon : 0,
+    };
+  },
+  (dispatch) => ({})
+)(AutopanPresentaion);
 
 /* ********************************************************************** */
 
@@ -533,6 +572,7 @@ class MapViewPresentation extends React.Component {
     return (
       <NearestItemTooltip>
         <div style={{ height: '100%' }}>
+          <AutoPanComponent />
           <Map
             ref={this._map}
             loadTilesWhileInteracting

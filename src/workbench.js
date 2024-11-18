@@ -153,6 +153,11 @@ export const componentRegistry = {
     label: 'Vtol Swarm Panel',
     detachable: true,
   },
+  targetcnf: {
+    component: views.TargetCNF,
+    label: 'Target CNF Panel',
+    detachable: true,
+  },
   map: {
     component: MapView,
     label: 'Map',
