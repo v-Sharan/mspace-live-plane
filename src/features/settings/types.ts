@@ -145,6 +145,8 @@ export type SettingsState = {
      */
     warnThreshold: number;
 
+    airspeedThreshold: number;
+
     /**
      * Number of seconds after which a UAV with no status updates is
      * marked as gone

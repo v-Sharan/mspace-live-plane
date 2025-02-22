@@ -16,5 +16,6 @@ export {
   SimpleVoltageField,
   Switch,
   TextField,
+  SimpleAirspeedField,
 } from './fields';
 export { forceFormSubmission } from './utils';

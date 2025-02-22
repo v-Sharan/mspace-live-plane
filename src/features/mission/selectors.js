@@ -243,6 +243,8 @@ export const getGeofencePolygonId = (state) => state.mission.geofencePolygonId;
  */
 export const getInitialMissionId = (state) => state.mission.initialMissionId;
 
+export const getLandingMissionId = (state) => state.mission.LandingMissinId;
+
 /**
  * Gets the coordinates of the polygon that is to be used as a geofence, in
  * world coordinates, or undefined if no geofence polygon is defined.

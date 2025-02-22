@@ -103,6 +103,8 @@ export type MissionSliceState = ReadonlyDeep<{
    * Whether we are using the initial mission or not
    */
   initialMissionId?: FeatureProperties['id'];
+
+  LandingMissinId?: FeatureProperties['id'];
 }>;
 
 const initialState: MissionSliceState = {
@@ -119,6 +121,7 @@ const initialState: MissionSliceState = {
   geofencePolygonId: undefined,
   geofenceAction: GeofenceAction.RETURN,
   initialMissionId: undefined,
+  LandingMissinId: undefined,
 };
 
 const { actions, reducer } = createSlice({
@@ -162,6 +165,10 @@ const { actions, reducer } = createSlice({
      */
     clearInitialMissionId: noPayload<MissionSliceState>((state) => {
       state.initialMissionId = undefined;
+    }),
+
+    clearLandingId: noPayload<MissionSliceState>((state) => {
+      state.LandingMissinId = undefined;
     }),
 
     /**
@@ -282,6 +289,10 @@ const { actions, reducer } = createSlice({
 
     setInitialMissionId(state, action: PayloadAction<FeatureProperties['id']>) {
       state.initialMissionId = action.payload;
+    },
+
+    setLandingMissionId(state, action: PayloadAction<FeatureProperties['id']>) {
+      state.LandingMissinId = action.payload;
     },
 
     /**
@@ -421,6 +432,7 @@ export const {
   cancelMappingEditorSessionAtCurrentSlot,
   clearGeofencePolygonId,
   clearInitialMissionId,
+  clearLandingId,
   clearMapping,
   clearMappingSlot,
   commitMappingEditorSessionAtCurrentSlot,
@@ -431,6 +443,7 @@ export const {
   setGeofenceAction,
   setGeofencePolygonId,
   setInitialMissionId,
+  setLandingMissionId,
   setMappingLength,
   startMappingEditorSession,
   startMappingEditorSessionAtSlot,

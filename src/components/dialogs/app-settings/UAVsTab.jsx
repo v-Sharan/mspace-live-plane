@@ -16,6 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 
 import Header from '@skybrush/mui-components/lib/FormHeader';
+import messageHub from '~/message-hub';
 
 import {
   SimpleAngleField,
@@ -23,6 +24,7 @@ import {
   SimpleDurationField,
   SimpleNumericField,
   SimpleVoltageField,
+  SimpleAirspeedField,
 } from '~/components/forms';
 import { updateUAVVoltageThreshold } from '~/features/settings/actions';
 import { updateAppSettings } from '~/features/settings/slice';
@@ -68,6 +70,8 @@ const UAVsTabPresentation = ({
   takeoffHeadingAccuracy,
   uavOperationConfirmationStyle,
   warnThreshold,
+  airspeedThreshold,
+  onAirspeedFieldUpdate,
 }) => {
   const theme = useTheme();
   return (
@@ -85,6 +89,20 @@ const UAVsTabPresentation = ({
             value={warnThreshold}
             variant='standard'
             onChange={onIntegerFieldUpdated}
+          />
+        </FormControl>
+        <FormControl style={{ alignItems: 'center', flexDirection: 'row' }}>
+          <FormControlLabel
+            label={'Alert About Drones at Minimum Airspeed Detected'}
+            control={<Checkbox checked style={{ visibility: 'hidden' }} />}
+          />
+          <SimpleAirspeedField
+            name='airspeedThreshold'
+            min={1}
+            max={40}
+            value={airspeedThreshold}
+            variant='standard'
+            onChange={onAirspeedFieldUpdate}
           />
         </FormControl>
 
@@ -321,6 +339,20 @@ export default connect(
 
     onIntegerFieldUpdated(event) {
       const value = Number.parseInt(event.target.value, 10);
+
+      if (value > 0) {
+        dispatch(
+          updateAppSettings('uavs', {
+            [event.target.name]: value,
+          })
+        );
+      }
+    },
+
+    async onAirspeedFieldUpdate(event) {
+      const value = Number.parseInt(event.target.value, 10);
+
+      // const req = await messageHub.sendMessage({})
 
       if (value > 0) {
         dispatch(

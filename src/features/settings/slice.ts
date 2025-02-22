@@ -74,6 +74,7 @@ const initialState: SettingsSliceState = {
   uavs: {
     autoRemove: false,
     warnThreshold: 3,
+    airspeedThreshold: 10,
     goneThreshold: 60,
     forgetThreshold: 600,
     placementAccuracy: 1000,

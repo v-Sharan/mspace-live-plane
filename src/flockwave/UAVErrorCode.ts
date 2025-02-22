@@ -72,6 +72,8 @@ enum UAVErrorCode {
   SIMULATED_CRITICAL_ERROR = 253,
   CRITICAL_SENSOR_FAILURE = 254,
   UNSPECIFIED_CRITICAL_ERROR = 255,
+
+  LOW_AIRSPEED = 256,
 }
 
 const abbreviations: Record<UAVErrorCode, string> = {
@@ -136,6 +138,7 @@ const abbreviations: Record<UAVErrorCode, string> = {
   [UAVErrorCode.SIMULATED_CRITICAL_ERROR]: 'simcrit',
   [UAVErrorCode.CRITICAL_SENSOR_FAILURE]: 'sensor',
   [UAVErrorCode.UNSPECIFIED_CRITICAL_ERROR]: 'fatal',
+  [UAVErrorCode.LOW_AIRSPEED]: 'low airspeed',
 };
 
 const descriptions: Record<UAVErrorCode, string> = {
@@ -207,6 +210,7 @@ const descriptions: Record<UAVErrorCode, string> = {
   [UAVErrorCode.SIMULATED_CRITICAL_ERROR]: 'Simulated critical error',
   [UAVErrorCode.CRITICAL_SENSOR_FAILURE]: 'Unspecified critical sensor failure',
   [UAVErrorCode.UNSPECIFIED_CRITICAL_ERROR]: 'Unspecified critical error',
+  [UAVErrorCode.LOW_AIRSPEED]: 'Low Airspeed Detected',
 };
 
 namespace UAVErrorCode {

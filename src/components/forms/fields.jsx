@@ -559,6 +559,15 @@ export const SimpleDurationField = createNumericField({
   },
 });
 
+export const SimpleAirspeedField = createNumericField({
+  displayName: 'SimpleAirspeedField',
+  unit: 'm/s',
+  defaultProps: {
+    min: 0,
+    size: 4,
+  },
+});
+
 export const SimpleNumericField = createNumericField({
   displayName: 'SimpleNumericField',
 });

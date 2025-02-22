@@ -158,17 +158,21 @@ const performMassOperation =
           return;
         }
       }
-      let msg = { type, ids: uavs, ...finalArgs };
-      if (type == 'UAV-TAKEOFF') {
-        msg = {
-          type,
-          alt: getTakeOff(store.getState()),
-          ids: uavs,
-          ...finalArgs,
-        };
-      }
+      // let msg = { type, ids: uavs, ...finalArgs };
+      // if (type == 'UAV-TAKEOFF') {
+      //   msg = {
+      //     type,
+      //     alt: getTakeOff(store.getState()),
+      //     ids: uavs,
+      //     ...finalArgs,
+      //   };
+      // }
 
-      const responses = await messageHub.startAsyncOperation(msg);
+      const responses = await messageHub.startAsyncOperation({
+        type,
+        ids: uavs,
+        ...finalArgs,
+      });
       processResponses(name, responses, { reportFailure, reportSuccess });
     } catch (error) {
       console.error(error);
@@ -255,9 +259,13 @@ export const takeoffUAVs = performMassOperation({
   name: 'Takeoff command',
 });
 
+export const qloiterMode = performMassOperation({
+  type: 'X-UAV-QLOITER',
+  name: 'QLoiter mode command',
+});
 export const guidedMode = performMassOperation({
   type: 'X-UAV-GUIDED',
-  name: 'QLoiter mode command',
+  name: 'Guided mode command',
 });
 
 export const AutoMode = performMassOperation({
@@ -366,6 +374,11 @@ export const turnMotorsOnForUAVs = performMassOperation({
   }),
 });
 
+export const startEngineForUav = performMassOperation({
+  type: 'X-UAV-ENGINE-START',
+  name: 'Engine Start Command',
+});
+
 // moveUAVs() not in this map because it requires extra args
 const OPERATION_MAP = {
   shutdown: shutdownUAVs,
@@ -380,6 +393,8 @@ const OPERATION_MAP = {
   automode: AutoMode,
   takeOff: takeoffUAVs,
   vtolMission: vtolMission,
+  engineStart: startEngineForUav,
+  qloiter: qloiterMode,
 };
 
 /**

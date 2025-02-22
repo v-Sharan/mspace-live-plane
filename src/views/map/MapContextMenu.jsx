@@ -49,6 +49,8 @@ import {
   setGeofencePolygonId,
   setInitialMissionId,
   clearInitialMissionId,
+  setLandingMissionId,
+  clearLandingId,
 } from '~/features/mission/slice';
 import {
   getGeofencePolygonId,
@@ -71,7 +73,9 @@ class MapContextMenu extends React.Component {
     removeFeaturesByIds: PropTypes.func,
     setGeofencePolygonId: PropTypes.func,
     setInitialMissionId: PropTypes.func,
+    setLandingMissionId: PropTypes.func,
     clearInitialMissionId: PropTypes.func,
+    clearLandingId: PropTypes.func,
     setMapCoordinateSystemOrigin: PropTypes.func,
     setShowCoordinateSystemOrigin: PropTypes.func,
     showFlyToTargetDialog: PropTypes.func,
@@ -222,6 +226,33 @@ class MapContextMenu extends React.Component {
               </MenuItem>
             );
           }
+          if (hasSingleSelectedFeature) {
+            const landMission = ['lineString'];
+
+            const featureSuitableForGeofence = landMission.includes(
+              selectedFeatureTypes[0]
+            );
+
+            const isCurrentLandingMission =
+              selectedFeatureIds[0] === landMission;
+            result.push(
+              <MenuItem
+                key='landingMission'
+                dense
+                disabled={!featureSuitableForGeofence}
+                onClick={
+                  isCurrentLandingMission
+                    ? this._unsetSelectedFeatureAsLandingMission
+                    : this._setSelectedFeatureAsLandingMission
+                }
+              >
+                <ListItemIcon>{null}</ListItemIcon>
+                {isCurrentLandingMission
+                  ? 'Clear Landing Misson'
+                  : 'Use as Landing Misson'}
+              </MenuItem>
+            );
+          }
 
           if (hasSingleSelectedFeature) {
             const geofenceCompatibleFeatureTypes = [
@@ -369,6 +400,13 @@ class MapContextMenu extends React.Component {
     }
   };
 
+  _unsetSelectedFeatureAsLandingMission = (_event, _context) => {
+    const { clearLandingId } = this.props;
+    if (clearLandingId) {
+      clearLandingId();
+    }
+  };
+
   _setSelectedFeatureAsGeofence = (_event, context) => {
     const { setGeofencePolygonId } = this.props;
     const { selectedFeatureIds } = context;
@@ -386,6 +424,17 @@ class MapContextMenu extends React.Component {
 
     if (setInitialMissionId) {
       setInitialMissionId(selectedFeatureIds[0]);
+    }
+
+    // this.props.setFeatureAsInitialMission(selectedFeatureIds[0]);
+  };
+
+  _setSelectedFeatureAsLandingMission = (_event, context) => {
+    const { setLandingMissionId } = this.props;
+    const { selectedFeatureIds } = context;
+
+    if (setLandingMissionId) {
+      setLandingMissionId(selectedFeatureIds[0]);
     }
 
     // this.props.setFeatureAsInitialMission(selectedFeatureIds[0]);
@@ -494,6 +543,8 @@ const MapContextMenuContainer = connect(
     setGeofencePolygonId: hasGeofence ? setGeofencePolygonId : null,
     setInitialMissionId: hasGeofence ? setInitialMissionId : null,
     clearInitialMissionId: hasGeofence ? clearInitialMissionId : null,
+    setLandingMissionId: hasGeofence ? setLandingMissionId : null,
+    clearLandingId: hasGeofence ? clearLandingId : null,
     setMapCoordinateSystemOrigin: setFlatEarthCoordinateSystemOrigin,
     setShowCoordinateSystemOrigin: hasShowControl
       ? (coords) =>

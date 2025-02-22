@@ -721,7 +721,7 @@ export function getSingleUAVStatusSummary(uav) {
   let text;
   let textSemantics;
   let airspeed;
-
+  let shouldPlayAlert = false;
   if (!uav) {
     // No such UAV
     status = undefined;
@@ -742,14 +742,19 @@ export function getSingleUAVStatusSummary(uav) {
       // "on ground" is treated separately; it is always shown in green even
       // though it's technically an info message
       textSemantics = Status.SUCCESS;
+    } else if (maxError === UAVErrorCode.LOW_AIRSPEED) {
+      textSemantics = Status.ERROR;
+      text = 'Low APS';
+      shouldPlayAlert = true;
     } else {
       textSemantics = errorSeverityToSemantics(severity);
     }
   } else if (uav.position && Math.abs(uav.position.ahl) >= 0.3) {
     // UAV is in the air
     text = 'airborne';
-    details = `${uav.position.ahl.toFixed(2)}m`;
+    details = 'airborne';
     textSemantics = Status.SUCCESS;
+    // inAir = true;
   } else {
     // UAV is ready on the ground
     text = 'ready';
@@ -791,6 +796,8 @@ export function getSingleUAVStatusSummary(uav) {
     batteryStatus: uav ? uav.battery : undefined,
     airspeed,
     mode: uav && uav.mode,
+    height: `${uav.position?.ahl.toFixed(2)}m`,
+    shouldPlayAlert,
   };
 }
 /* eslint-enable complexity */

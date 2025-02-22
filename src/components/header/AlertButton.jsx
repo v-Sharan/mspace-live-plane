@@ -79,8 +79,8 @@ const AlertButton = ({ count, muted, t, ...rest }) => {
         muted
           ? t('alerts.muted')
           : hasAlerts
-          ? t('alerts.acknowledgeAlerts')
-          : t('alerts.clickToMute')
+            ? t('alerts.acknowledgeAlerts')
+            : t('alerts.clickToMute')
       }
     >
       {muted ? (

@@ -10,6 +10,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import Clear from '@material-ui/icons/Clear';
 import Delete from '@material-ui/icons/Delete';
+import Engine from '@material-ui/icons/SportsMotorsports';
+import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import Assignment from '@material-ui/icons/Assignment';
 import Home from '@material-ui/icons/Home';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
@@ -71,6 +73,9 @@ const UAVOperationsButtonGroup = ({
     turnMotorsOn,
     guided,
     automode,
+    takeOff,
+    qloiter,
+    land,
   } = bindActionCreators(
     createUAVOperationThunks({
       getTargetedUAVIds(state) {
@@ -101,7 +106,7 @@ const UAVOperationsButtonGroup = ({
       {!hideSeparators && startSeparator && (
         <ToolbarDivider orientation='vertical' />
       )}
-      {/* 
+
       <Tooltip content={t('UAVOpButtonGrp.takeOff')}>
         <IconButton
           disabled={isSelectionEmpty}
@@ -111,7 +116,7 @@ const UAVOperationsButtonGroup = ({
           <FlightTakeoff fontSize={fontSize} />
         </IconButton>
       </Tooltip>
-      <Input
+      {/* <Input
         value={alt}
         disabled={isSelectionEmpty}
         style={{ width: 25 }}
@@ -124,8 +129,22 @@ const UAVOperationsButtonGroup = ({
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
+          onClick={qloiter}
+        >
+          <GuidedMode fontSize={fontSize} />
+        </IconButton>
+      </Tooltip>
+      <Tooltip content={'Guided Mode'}>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
           onClick={guided}
         >
+          <GuidedMode fontSize={fontSize} />
+        </IconButton>
+      </Tooltip>
+      <Tooltip content={'QLAND Mode'}>
+        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
           <GuidedMode fontSize={fontSize} />
         </IconButton>
       </Tooltip>
@@ -148,6 +167,15 @@ const UAVOperationsButtonGroup = ({
           <Home fontSize={fontSize} />
         </IconButton>
       </Tooltip>
+      {/* <Tooltip content={'Start Engine'}>
+        <IconButton
+          disabled={isSelectionEmpty}
+          size={iconSize}
+          onClick={engineStart}
+        >
+          <Engine fontSize={fontSize} />
+        </IconButton>
+      </Tooltip> */}
 
       <Tooltip content={'Auto Pan'}>
         <Checkbox

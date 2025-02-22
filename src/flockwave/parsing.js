@@ -46,9 +46,11 @@ const MESSAGES_WITH_RECEIPTS = {
   'UAV-SLEEP': true,
   'UAV-WAKEUP': true,
   'X-UAV-GUIDED': true,
+  'X-UAV-QLOITER': true,
   'X-UAV-socket': true,
   'X-UAV-MISSION': true,
   'X-UAV-AUTO': true,
+  'X-UAV-QLAND': true,
 };
 
 /**

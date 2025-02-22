@@ -29,8 +29,12 @@ import {
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
 import { setSelectedTool } from '~/features/map/tools';
 import { getUAVIdList } from '~/features/uavs/selectors';
-import { getInitialMissionId } from '~/features/mission/selectors';
+import {
+  getInitialMissionId,
+  getLandingMissionId,
+} from '~/features/mission/selectors';
 import { Tool } from '~/views/map/tools';
+import { openOnLoadImage } from '~/features/show/slice';
 
 const VtolPanel = ({
   selectedUAVIds,
@@ -39,6 +43,8 @@ const VtolPanel = ({
   dispatch,
   ids,
   initalFeature,
+  onLoadImage,
+  landingFeature,
 }) => {
   const [data, setData] = useState({
     numofdrone: 0,
@@ -63,6 +69,7 @@ const VtolPanel = ({
   const handleMsg = async (msg) => {
     let body = {};
     const initialMission = initalFeature();
+    const landingMission = landingFeature();
     const coords = features.filter((item) => item.type === 'points');
     if (msg == 'uploadmission') {
       if (data.numofdrone == 0 && data.turn == '') {
@@ -75,12 +82,12 @@ const VtolPanel = ({
         return;
       }
       if (data.missiontype == 'fixed type') {
-        if (initialMission.length > 0) {
-          body = { mission: initialMission };
+        if (initialMission.length > 0 && landingMission.length > 0) {
+          body = { mission: initialMission, landingMission: landingMission };
         } else {
           dispatch(
             showNotification({
-              message: `Failed to send message ${msg} due to Initial Mission is Empty or Mission Type is not Fixed`,
+              message: `Failed to send message ${msg} due to Initial or Landing Mission is Empty or Mission Type is not Fixed`,
               semantics: MessageSemantics.ERROR,
             })
           );
@@ -386,9 +393,16 @@ export default connect(
       if (feature === undefined) return [];
       return feature?.points;
     },
+    landingFeature: () => {
+      const landingMissionId = getLandingMissionId(state);
+      const landingFeature = getFeatureById(state, landingMissionId);
+      if (landingFeature === undefined) return [];
+      return landingFeature?.points;
+    },
   }),
   (dispatch) => ({
     onToolSelected: setSelectedTool,
     dispatch,
+    onLoadImage: openOnLoadImage,
   })
 )(VtolPanel);

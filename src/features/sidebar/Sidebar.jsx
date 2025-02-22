@@ -112,12 +112,12 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           label={'VTOL Swarm'}
           component='vtol'
         />
-        <Module
+        {/* <Module
           id='targetcnf'
           icon={<SwarmIcon />}
           label={'Target Conformation'}
           component='targetcnf'
-        />
+        /> */}
       </ModuleTray>
     </div>
     {isOpen && (

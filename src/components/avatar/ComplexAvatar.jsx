@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,10 +13,27 @@ import StatusPill from '~/components/StatusPill';
 
 import SecondaryStatusLight from './SecondaryStatusLight';
 import store from '~/store';
-// import { MessageSemantics } from '~/features/snackbar/types';
-// import { showNotification } from '~/features/snackbar/slice';
+import alertSoundResource from '~/../assets/sounds/alert.mp3';
+import { useAudio, useInterval, useMount } from 'react-use';
+import { showError } from '~/features/snackbar/actions';
 
-// const { dispatch } = store;
+const AUDIO_REPEAT_INTERVAL_SEC = 2;
+
+const AlertSound = () => {
+  const [audio, state, controls] = useAudio(<audio src={alertSoundResource} />);
+
+  // Trigger audio first when the component is mounted
+  useMount(() => controls.play());
+
+  // Also trigger audio every AUDIO_REPEAT_INTERVAL_SEC seconds
+  useInterval(() => {
+    if (!state.playing) {
+      controls.play();
+    }
+  }, AUDIO_REPEAT_INTERVAL_SEC * 1000);
+
+  return audio;
+};
 
 const useStyles = makeStyles(
   (theme) => ({
@@ -86,6 +103,7 @@ const useStyles = makeStyles(
  * Avatar that represents a single drone, docking station or some other object
  * in the system that has an ID.
  */
+
 const ComplexAvatar = ({
   AvatarProps,
   batteryFormatter,
@@ -103,9 +121,15 @@ const ComplexAvatar = ({
   text,
   textSemantics,
   airspeed,
+  height,
   mode,
+  shouldPlayAlert,
 }) => {
+  let err = '';
+  // const airspeedThreshold = store.getState().settings.uavs.airspeedThreshold;
   const classes = useStyles();
+
+  // store.dispatch(showError(`${height}`));
 
   if (status === Status.INFO) {
     status = Status.SUCCESS;
@@ -120,6 +144,7 @@ const ComplexAvatar = ({
           gone && classes.gone
         )}
       >
+        {shouldPlayAlert && <AlertSound />}
         <SemanticAvatar
           status={editing ? Status.NEXT : status}
           {...AvatarProps}
@@ -138,12 +163,14 @@ const ComplexAvatar = ({
         )}
         {secondaryStatus && <SecondaryStatusLight status={secondaryStatus} />}
       </div>
-      {(details || text) && (
-        <StatusPill status={textSemantics}>{details || text}</StatusPill>
-      )}
+      {height && <StatusPill status={textSemantics}>{height}</StatusPill>}
       {airspeed && (
         <StatusPill status={textSemantics}>{airspeed} m/s</StatusPill>
       )}
+      {(details || text) && (
+        <StatusPill status={textSemantics}>{details || text}</StatusPill>
+      )}
+      <StatusPill status={textSemantics}>{err}</StatusPill>
       {mode && <StatusPill status={textSemantics}>{mode}</StatusPill>}
       {batteryStatus && (
         <BatteryIndicator formatter={batteryFormatter} {...batteryStatus} />
