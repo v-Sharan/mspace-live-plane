@@ -796,7 +796,7 @@ export function getSingleUAVStatusSummary(uav) {
     batteryStatus: uav ? uav.battery : undefined,
     airspeed,
     mode: uav && uav.mode,
-    height: `${uav.position?.ahl.toFixed(2)}m`,
+    height: `${uav?.position?.ahl.toFixed(2)}m`,
     shouldPlayAlert,
   };
 }

@@ -6,7 +6,7 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
-import { type Feature } from '~/model/features';
+import {type Feature, LabelStyle} from '~/model/features';
 import {
   addItemToBack,
   type Collection,
@@ -190,6 +190,7 @@ const { actions, reducer } = createSlice({
         console.warn(`Cannot rename non-existent feature ${id}`);
       } else {
         feature.label = name;
+        feature.labelStyle= LabelStyle.THIN_OUTLINE;
       }
     },
 

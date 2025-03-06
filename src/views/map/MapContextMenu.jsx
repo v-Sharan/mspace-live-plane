@@ -54,7 +54,7 @@ import {
 } from '~/features/mission/slice';
 import {
   getGeofencePolygonId,
-  getInitialMissionId,
+  getInitialMissionId, getLandingMissionId,
 } from '~/features/mission/selectors';
 import { updateOutdoorShowSettings } from '~/features/show/actions';
 import { openUAVDetailsDialog } from '~/features/uavs/details';
@@ -115,6 +115,7 @@ class MapContextMenu extends React.Component {
           selectedUAVIds,
           geofencePolygonId,
           initialMissionId,
+          landingMissionId,
         }) => {
           const result = [];
           const hasSelectedUAVs = selectedUAVIds && selectedUAVIds.length > 0;
@@ -219,7 +220,6 @@ class MapContextMenu extends React.Component {
                     : this._setSelectedFeatureAsInitialMission
                 }
               >
-                <ListItemIcon>{null}</ListItemIcon>
                 {isCurrentInitialMission
                   ? 'Clear Intial Misson'
                   : 'Use as Initial Misson'}
@@ -234,7 +234,8 @@ class MapContextMenu extends React.Component {
             );
 
             const isCurrentLandingMission =
-              selectedFeatureIds[0] === landMission;
+              selectedFeatureIds[0] === landingMissionId;
+
             result.push(
               <MenuItem
                 key='landingMission'
@@ -246,7 +247,6 @@ class MapContextMenu extends React.Component {
                     : this._setSelectedFeatureAsLandingMission
                 }
               >
-                <ListItemIcon>{null}</ListItemIcon>
                 {isCurrentLandingMission
                   ? 'Clear Landing Misson'
                   : 'Use as Landing Misson'}
@@ -436,7 +436,6 @@ class MapContextMenu extends React.Component {
     if (setLandingMissionId) {
       setLandingMissionId(selectedFeatureIds[0]);
     }
-
     // this.props.setFeatureAsInitialMission(selectedFeatureIds[0]);
   };
 
@@ -509,13 +508,15 @@ const getContextProvider = createSelector(
   getSelectedUAVIds,
   getGeofencePolygonId,
   getInitialMissionId,
+  getLandingMissionId,
   (
     selectedFeatureIds,
     selectedFeatureLabels,
     selectedFeatureTypes,
     selectedUAVIds,
     geofencePolygonId,
-    initialMissionId
+    initialMissionId,
+    landingMissionId,
   ) =>
     (context) => ({
       selectedFeatureIds,
@@ -524,6 +525,7 @@ const getContextProvider = createSelector(
       selectedUAVIds,
       geofencePolygonId,
       initialMissionId,
+      landingMissionId,
       ...context,
     })
 );

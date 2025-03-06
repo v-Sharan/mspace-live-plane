@@ -10,9 +10,10 @@ import { type UAVSortKey } from '~/model/sorting';
 export enum AppSettingsDialogTab {
   API_KEYS = 'apiKeys',
   DISPLAY = 'display',
-  PREFLIGHT = 'preflight',
-  SERVER = 'server',
-  THREE_D = 'threeD',
+  // PREFLIGHT = 'preflight',
+  // SERVER = 'server',
+  // THREE_D = 'threeD',
+  SWARM = 'swarm',
   UAVS = 'uavs',
 }
 

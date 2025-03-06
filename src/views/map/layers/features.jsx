@@ -1,10 +1,10 @@
 import createColor from 'color';
 import unary from 'lodash-es/unary';
 import PropTypes from 'prop-types';
-import { MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
-import { Circle, Style, Text, Fill } from 'ol/style';
-import React, { useCallback, useRef } from 'react';
-import { connect } from 'react-redux';
+import {MultiPoint, MultiPolygon, Polygon} from 'ol/geom';
+import {Circle, Style, Text, Fill} from 'ol/style';
+import React, {useCallback, useRef} from 'react';
+import {connect} from 'react-redux';
 
 import {
   Feature as OLFeature,
@@ -14,22 +14,22 @@ import {
   source,
 } from '@collmot/ol-react';
 
-import { snapEndToStart } from '../interactions/utils';
-import { Tool } from '../tools';
+import {snapEndToStart} from '../interactions/utils';
+import {Tool} from '../tools';
 
 import {
   getFeaturesInOrder,
   getSelectedFeatureIds,
   shouldShowPointsOfFeature,
 } from '~/features/map-features/selectors';
-import { getGeofencePolygonId } from '~/features/mission/selectors';
-import { showError } from '~/features/snackbar/actions';
-import { FeatureType, LabelStyle } from '~/model/features';
-import { featureIdToGlobalId } from '~/model/identifiers';
-import { handleFeatureUpdatesInOpenLayers } from '~/model/openlayers';
-import { setLayerEditable, setLayerSelectable } from '~/model/layers';
-import { mapViewCoordinateFromLonLat, measureFeature } from '~/utils/geography';
-import { closePolygon, euclideanDistance2D } from '~/utils/math';
+import {getGeofencePolygonId} from '~/features/mission/selectors';
+import {showError} from '~/features/snackbar/actions';
+import {FeatureType, LabelStyle} from '~/model/features';
+import {featureIdToGlobalId} from '~/model/identifiers';
+import {handleFeatureUpdatesInOpenLayers} from '~/model/openlayers';
+import {setLayerEditable, setLayerSelectable} from '~/model/layers';
+import {mapViewCoordinateFromLonLat, measureFeature} from '~/utils/geography';
+import {closePolygon, euclideanDistance2D} from '~/utils/math';
 import {
   fill,
   primaryColor,
@@ -47,7 +47,7 @@ import {
  * feature, using ol-react tags.
  */
 const geometryForFeature = (feature) => {
-  const { points, type } = feature;
+  const {points, type} = feature;
   const coordinates = points.map(unary(mapViewCoordinateFromLonLat));
 
   switch (type) {
@@ -55,20 +55,20 @@ const geometryForFeature = (feature) => {
       if (coordinates.length >= 2) {
         const center = coordinates[0];
         const radius = euclideanDistance2D(coordinates[0], coordinates[1]);
-        return <geom.Circle center={center} radius={radius} />;
+        return <geom.Circle center={center} radius={radius}/>;
       }
 
       return null;
 
     case FeatureType.POINTS:
       return coordinates.length > 1 ? (
-        <geom.MultiPoint coordinates={coordinates} />
+        <geom.MultiPoint coordinates={coordinates}/>
       ) : (
-        <geom.Point coordinates={coordinates[0]} />
+        <geom.Point coordinates={coordinates[0]}/>
       );
 
     case FeatureType.LINE_STRING:
-      return <geom.LineString coordinates={coordinates} />;
+      return <geom.LineString coordinates={coordinates}/>;
 
     case FeatureType.POLYGON: {
       // OpenLayers requires the last coordinate to be the same as the first
@@ -83,7 +83,7 @@ const geometryForFeature = (feature) => {
         closePolygon(hole);
       }
 
-      return <geom.Polygon coordinates={coordinates} holes={holes} />;
+      return <geom.Polygon coordinates={coordinates} holes={holes}/>;
     }
 
     default:
@@ -91,7 +91,7 @@ const geometryForFeature = (feature) => {
   }
 };
 
-const whiteThickOutlineStyle = new Style({ stroke: whiteThickOutline });
+const whiteThickOutlineStyle = new Style({stroke: whiteThickOutline});
 const labelStrokes = {
   [LabelStyle.THIN_OUTLINE]: whiteThinOutline,
   [LabelStyle.THICK_OUTLINE]: whiteThickOutline,
@@ -128,7 +128,7 @@ const styleForFeature = (
   isSelected = false,
   shouldShowPoints = false
 ) => {
-  const { color, label, labelStyle, measure, type, filled } = feature;
+  const {color, label, labelStyle, measure, type, filled} = feature;
   const parsedColor = createColor(color || primaryColor);
   const styles = [];
   const radius = 6;
@@ -250,7 +250,7 @@ const styleForFeature = (
           text: `(${measureFeature(feature)})`,
           textAlign: 'center',
           textBaseline: type === FeatureType.LINE_STRING ? 'top' : 'middle',
-          fill: new Fill({ color: 'black' }),
+          fill: new Fill({color: 'black'}),
         }),
       })
     );
@@ -260,12 +260,12 @@ const styleForFeature = (
 };
 
 const FeaturePresentation = ({
-  feature,
-  isSelected,
-  isGeofence,
-  shouldShowPoints,
-  ...rest
-}) => (
+                               feature,
+                               isSelected,
+                               isGeofence,
+                               shouldShowPoints,
+                               ...rest
+                             }) => (
   <OLFeature
     id={featureIdToGlobalId(feature.id)}
     style={styleForFeature(feature, isGeofence, isSelected, shouldShowPoints)}
@@ -284,7 +284,7 @@ FeaturePresentation.propTypes = {
 
 const Feature = connect(
   // mapStateToProps
-  (state, { feature }) => ({
+  (state, {feature}) => ({
     isGeofence: getGeofencePolygonId(state) === feature.id,
     isSelected: getSelectedFeatureIds(state).includes(feature.id),
     shouldShowPoints: shouldShowPointsOfFeature(state, feature.id),
@@ -331,14 +331,14 @@ function getFeaturesThatChanged(features, snapshot) {
 }
 
 const FeaturesLayerPresentation = ({
-  features,
-  geofencePolygonId,
-  onError,
-  onFeatureModificationStarted,
-  onFeaturesModified,
-  selectedTool,
-  zIndex,
-}) => {
+                                     features,
+                                     geofencePolygonId,
+                                     onError,
+                                     onFeatureModificationStarted,
+                                     onFeaturesModified,
+                                     selectedTool,
+                                     zIndex,
+                                   }) => {
   // We actually do _not_ want the component to re-render when this variable
   // changes because we only need it to keep track of something between an
   // onModifyStart and an onModifyEnd event.
@@ -395,7 +395,7 @@ const FeaturesLayerPresentation = ({
         {features
           .filter((feature) => feature.visible)
           .map((feature) => (
-            <Feature key={feature.id} feature={feature} />
+            <Feature key={feature.id} feature={feature}/>
           ))}
         {selectedTool === Tool.CUT_HOLE ? (
           <interaction.CutHole

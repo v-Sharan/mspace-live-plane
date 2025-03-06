@@ -51,6 +51,7 @@ const MESSAGES_WITH_RECEIPTS = {
   'X-UAV-MISSION': true,
   'X-UAV-AUTO': true,
   'X-UAV-QLAND': true,
+  'X-LANDMISSION':true,
 };
 
 /**

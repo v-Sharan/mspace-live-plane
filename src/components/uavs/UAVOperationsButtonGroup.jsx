@@ -7,12 +7,13 @@ import { bindActionCreators } from '@reduxjs/toolkit';
 
 import IconButton from '@material-ui/core/IconButton';
 import Checkbox from '@material-ui/core/Checkbox';
-
+import Moon from '@material-ui/icons/NightsStay';
+import messageHub from '~/message-hub';
 import Clear from '@material-ui/icons/Clear';
 import Delete from '@material-ui/icons/Delete';
-import Engine from '@material-ui/icons/SportsMotorsports';
-import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import Assignment from '@material-ui/icons/Assignment';
+import FlightLand from '@material-ui/icons/FlightLand';
+import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
 import Home from '@material-ui/icons/Home';
 import PowerSettingsNew from '@material-ui/icons/PowerSettingsNew';
 import PlayArrow from '@material-ui/icons/PlayArrow';
@@ -28,11 +29,14 @@ import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
-import { openUAVDetailsDialog } from '~/features/uavs/details';
+import {openUAVDetailsDialog, setMissionFromServer} from '~/features/uavs/details';
 import { createUAVOperationThunks } from '~/utils/messaging';
-import { getPreferredCommunicationChannelIndex } from '~/features/mission/selectors';
+import {getLandingMissionId, getPreferredCommunicationChannelIndex} from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { updateAutoPanSettings, stopAutoPan } from '~/features/map/autopan';
+import {getFeatureById} from "~/features/map-features/selectors";
+import {showNotification} from "~/features/snackbar/slice";
+import {MessageSemantics} from "~/features/snackbar/types";
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -50,13 +54,19 @@ const UAVOperationsButtonGroup = ({
   startSeparator,
   t,
   autopan,
+landingFeature
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
+  React.useEffect(()=>{
+    if(!autopan.isAutoPan) return;
+    dispatch(stopAutoPan())
+    },[])
+
   const handleAutoPan = () => {
     const uavid = selectedUAVIds[0];
-    if (autopan.isAutoPan && uavid == autopan.uavid) {
+    if (autopan.isAutoPan && uavid === autopan.uavid) {
       dispatch(stopAutoPan());
       return;
     }
@@ -116,15 +126,11 @@ const UAVOperationsButtonGroup = ({
           <FlightTakeoff fontSize={fontSize} />
         </IconButton>
       </Tooltip>
-      {/* <Input
-        value={alt}
-        disabled={isSelectionEmpty}
-        style={{ width: 25 }}
-        onChange={({ target: { value } }) => {
-          TakeoffChangeFunc(value);
-        }}
-      /> */}
-
+      <Tooltip content={'Land Mission'}>
+        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
+          <FlightLand fontSize={fontSize} />
+        </IconButton>
+      </Tooltip>
       <Tooltip content={'QLoiter Mode'}>
         <IconButton
           disabled={isSelectionEmpty}
@@ -140,12 +146,7 @@ const UAVOperationsButtonGroup = ({
           size={iconSize}
           onClick={guided}
         >
-          <GuidedMode fontSize={fontSize} />
-        </IconButton>
-      </Tooltip>
-      <Tooltip content={'QLAND Mode'}>
-        <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
-          <GuidedMode fontSize={fontSize} />
+          <Moon fontSize={fontSize} />
         </IconButton>
       </Tooltip>
       <Tooltip content={'Auto Mode'}>
@@ -167,22 +168,12 @@ const UAVOperationsButtonGroup = ({
           <Home fontSize={fontSize} />
         </IconButton>
       </Tooltip>
-      {/* <Tooltip content={'Start Engine'}>
-        <IconButton
-          disabled={isSelectionEmpty}
-          size={iconSize}
-          onClick={engineStart}
-        >
-          <Engine fontSize={fontSize} />
-        </IconButton>
-      </Tooltip> */}
-
       <Tooltip content={'Auto Pan'}>
         <Checkbox
           disabled={!isSelectionSingle}
           size={iconSize}
           onClick={handleAutoPan}
-          checked={selectedUAVIds[0] == autopan.uavid}
+          checked={selectedUAVIds[0] === autopan.uavid}
         />
       </Tooltip>
 
@@ -315,12 +306,19 @@ UAVOperationsButtonGroup.propTypes = {
   size: PropTypes.oneOf(['small', 'medium']),
   startSeparator: PropTypes.bool,
   t: PropTypes.func,
+  landingFeature: PropTypes.func,
 };
 
 export default connect(
   // mapStateToProps
   (state) => ({
     autopan: state.map.autopan,
+    landingFeature: () => {
+      const landingMissionId = getLandingMissionId(state);
+      const landingFeature = getFeatureById(state, landingMissionId);
+      if (landingFeature === undefined) return [];
+      return landingFeature?.points;
+    },
   }),
   // mapDispatchToProps
   (dispatch) => ({

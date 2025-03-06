@@ -14,6 +14,8 @@ import { MessageSemantics } from '~/features/snackbar/types';
 import messageHub from '~/message-hub';
 import store from '~/store';
 import makeLogger from './logging';
+import {getSelectedFeatureIds, getFeatureById} from '~/features/map-features/selectors';
+import {getSpeed} from "~/features/swarm/selectors";
 
 const logger = makeLogger('messaging');
 
@@ -158,21 +160,21 @@ const performMassOperation =
           return;
         }
       }
-      // let msg = { type, ids: uavs, ...finalArgs };
-      // if (type == 'UAV-TAKEOFF') {
-      //   msg = {
-      //     type,
-      //     alt: getTakeOff(store.getState()),
-      //     ids: uavs,
-      //     ...finalArgs,
-      //   };
-      // }
+      let msg = { type, ids: uavs, ...finalArgs };
+      if (type == 'UAV-TAKEOFF') {
+        // const selectedFeatureIds = getSelectedFeatureIds(store.getState())
+        // const featureId = selectedFeatureIds[0]
+        const data = getFeatureById(store.getState(),'marker');
+        msg = {
+          type,
+          alt:[data.points[0][1],data.points[0][0]],
+          speed: getSpeed(store.getState()),
+          ids: uavs,
+          ...finalArgs,
+        };
+      }
 
-      const responses = await messageHub.startAsyncOperation({
-        type,
-        ids: uavs,
-        ...finalArgs,
-      });
+      const responses = await messageHub.startAsyncOperation(msg);
       processResponses(name, responses, { reportFailure, reportSuccess });
     } catch (error) {
       console.error(error);

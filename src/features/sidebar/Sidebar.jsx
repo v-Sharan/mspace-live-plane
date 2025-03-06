@@ -86,14 +86,14 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           label={t('view.camera')}
           component='camera'
         /> */}
-        {hasShowControl && (
-          <Module
-            id='show'
-            icon={<Grain />}
-            label={t('view.show-control')}
-            component='show-control'
-          />
-        )}
+        {/*{hasShowControl && (*/}
+        {/*  <Module*/}
+        {/*    id='show'*/}
+        {/*    icon={<Grain />}*/}
+        {/*    label={t('view.show-control')}*/}
+        {/*    component='show-control'*/}
+        {/*  />*/}
+        {/*)}*/}
         <Module
           id='spare-drone'
           icon={<CameraAltRounded />}
@@ -112,12 +112,12 @@ const Sidebar = ({ experimentalFeaturesEnabled, isOpen, t, workbench }) => (
           label={'VTOL Swarm'}
           component='vtol'
         />
-        {/* <Module
-          id='targetcnf'
+        <Module
+          id='swarm'
           icon={<SwarmIcon />}
-          label={'Target Conformation'}
-          component='targetcnf'
-        /> */}
+          label={'Swarm Panel'}
+          component='swarm'
+        />
       </ModuleTray>
     </div>
     {isOpen && (
