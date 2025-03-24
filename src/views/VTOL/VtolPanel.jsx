@@ -133,6 +133,10 @@ const VtolPanel = ({
       }
 
       if (msg === 'download') {
+        dispatch(showNotification({
+          message: `${res?.body?.message[0]?.length} Download`,
+          semantics: MessageSemantics.WARNING,
+        }))
         if (res?.body?.message[0]?.length == 0) {
           dispatch(
             showNotification({
@@ -142,6 +146,11 @@ const VtolPanel = ({
           );
           return;
         }
+        dispatch(
+          showNotification({
+            message: `${msg} AFTER`,
+            semantics: MessageSemantics.WARNING,
+          }))
         dispatch(setMissionFromServer(res.body.message));
       }
     } catch (e) {

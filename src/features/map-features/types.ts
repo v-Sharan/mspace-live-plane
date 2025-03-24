@@ -3,7 +3,7 @@ import { type Identifier } from '~/utils/collections';
 
 export enum FeatureEditorTab {
   GENERAL = 'general',
-  // POINTS = 'points',
+  POINTS = 'points',
 }
 
 export type FeatureProperties = {

@@ -214,7 +214,7 @@ export default class UAVFeature extends Feature {
     this._gimbalIcon = gimbalIconImage;
 
     const iconStyle = new Style({ image: iconImage });
-    // const gimbalIconStyle = new Style({ image: gimbalIconImage });
+    const gimbalIconStyle = new Style({ image: gimbalIconImage });
     styles.push(iconStyle);
     // styles.push(gimbalIconStyle);
 

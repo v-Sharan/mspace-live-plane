@@ -161,13 +161,14 @@ const performMassOperation =
         }
       }
       let msg = { type, ids: uavs, ...finalArgs };
-      if (type == 'UAV-TAKEOFF') {
+      if (type == 'X-UAV-TAKEOFF') {
         // const selectedFeatureIds = getSelectedFeatureIds(store.getState())
         // const featureId = selectedFeatureIds[0]
         const data = getFeatureById(store.getState(),'marker');
         msg = {
           type,
-          alt:[data.points[0][1],data.points[0][0]],
+          coords:[data.points[0][1],data.points[0][0]],
+          alt:getTakeOff(store.getState()),
           speed: getSpeed(store.getState()),
           ids: uavs,
           ...finalArgs,
@@ -257,7 +258,7 @@ export const flashLightOnUAVsAndHideFailures = performMassOperation({
 });
 
 export const takeoffUAVs = performMassOperation({
-  type: 'UAV-TAKEOFF',
+  type: 'X-UAV-TAKEOFF',
   name: 'Takeoff command',
 });
 

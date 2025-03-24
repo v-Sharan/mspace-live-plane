@@ -16,8 +16,6 @@ import Assignment from '@material-ui/icons/Assignment';
 import ContentCut from '~/icons/ContentCut';
 import Edit from '@material-ui/icons/Edit';
 import Flight from '@material-ui/icons/Flight';
-import FlightTakeoff from '@material-ui/icons/FlightTakeoff';
-import FlightLand from '@material-ui/icons/FlightLand';
 import Grain from '@material-ui/icons/Grain';
 import Home from '@material-ui/icons/Home';
 import Moon from '@material-ui/icons/NightsStay';
@@ -148,7 +146,16 @@ class MapContextMenu extends React.Component {
                 </ListItemIcon>
                 Fly here at altitude…
               </MenuItem>,
-              <Divider key='div1' />,
+              <MenuItem
+                key='payload_release'
+                dense
+                onClick={this._moveSelectedUAVsAtGivenAltitude}
+              >
+                <ListItemIcon>
+                  <Grain />
+                </ListItemIcon>
+                Release Payload at…
+              </MenuItem>,
               <MenuItem key='home' dense onClick={this._returnSelectedUAVs}>
                 <ListItemIcon>
                   <Home />

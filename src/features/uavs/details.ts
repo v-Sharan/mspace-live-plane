@@ -36,7 +36,7 @@ const initialState: UAVDetailsSliceState = {
   width: UAV_DETAILS_DIALOG_MIN_WIDTH,
   LoadMission: false,
   color: '',
-  missionPoints: [],
+  missionPoints: []
 };
 
 const { actions, reducer } = createSlice({

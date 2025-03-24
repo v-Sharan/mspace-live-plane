@@ -45,6 +45,7 @@ const ClockDisplayListEntry = ({
   clockSkew,
   format,
 }) => {
+
   const { running, updateInterval } = clock;
   const avatar = avatars[running ? 1 : 0];
   const label = formatClockLabel(clock);

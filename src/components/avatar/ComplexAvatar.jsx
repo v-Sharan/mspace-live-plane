@@ -43,6 +43,7 @@ const useStyles = makeStyles(
         marginBottom: theme.spacing(0.5),
       },
 
+
       '&::after': {
         background: Colors.error,
         boxShadow:
@@ -128,12 +129,6 @@ const ComplexAvatar = ({
   let err = '';
   // const airspeedThreshold = store.getState().settings.uavs.airspeedThreshold;
   const classes = useStyles();
-
-  // store.dispatch(showError(`${height}`));
-
-  if (status === Status.INFO) {
-    status = Status.SUCCESS;
-  }
 
   return (
     <>

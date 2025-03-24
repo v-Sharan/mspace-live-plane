@@ -1,5 +1,4 @@
 import {createSlice, type PayloadAction} from '@reduxjs/toolkit';
-import type UAV from '~/model/uav';
 
 type Groups = {
     uav_ids: string[];

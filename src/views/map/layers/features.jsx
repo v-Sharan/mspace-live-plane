@@ -313,16 +313,16 @@ function getFeaturesThatChanged(features, snapshot) {
   const result = [];
   const addedIds = [];
   for (const feature of features) {
-    const id = feature.getId();
-    if (addedIds.includes(id)) {
+    const id = feature?.getId();
+    if (addedIds?.includes(id)) {
       // For some reason, some features appear twice in the features array
       // in the onModifyEnd array in OpenLayers. Not sure if it is a bug in
       // OpenLayers or on our side, but we need to be careful nevertheless.
       continue;
     }
 
-    if (snapshot[id] === undefined || snapshot[id] !== feature.getRevision()) {
-      result.push(feature);
+    if (snapshot[id] === undefined || snapshot[id] !== feature?.getRevision()) {
+      result?.push(feature);
       addedIds.push(id);
     }
   }

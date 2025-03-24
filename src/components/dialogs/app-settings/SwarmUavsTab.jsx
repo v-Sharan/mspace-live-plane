@@ -19,8 +19,9 @@ import {MessageSemantics} from "~/features/snackbar/types";
 import {changeRadius, changeDirection, changeSpeed} from "~/features/swarm/slice";
 import {getRadius,getDirection,getSpeed} from "~/features/swarm/selectors";
 import { getUAVIdList} from "~/features/uavs/selectors";
+import {closeAppSettingsDialog} from "~/features/settings/actions";
 
-const SwarmUavsTab = ({dispatch,speed,radius,direction,selectedIds}) => {
+const SwarmUavsTab = ({dispatch,speed,radius,direction,selectedIds,onClose}) => {
 
   const OnSubmit = async (msg) => {
     try {
@@ -40,6 +41,7 @@ const SwarmUavsTab = ({dispatch,speed,radius,direction,selectedIds}) => {
             semantics: MessageSemantics.SUCCESS,
           })
         );
+        onClose()
       }
     } catch (e) {
       dispatch(
@@ -48,6 +50,7 @@ const SwarmUavsTab = ({dispatch,speed,radius,direction,selectedIds}) => {
           semantics: MessageSemantics.ERROR,
         })
       );
+      onClose()
     }
   }
 
@@ -78,8 +81,8 @@ const SwarmUavsTab = ({dispatch,speed,radius,direction,selectedIds}) => {
         />
         <SimpleAirspeedField
           name='radius'
-          min={30}
-          max={1000}
+          min={200}
+          max={400}
           value={radius}
           variant='standard'
           onChange={(event) => dispatch(changeRadius({radius: parseInt(event.target.value)}))}
@@ -118,6 +121,7 @@ SwarmUavsTab.propTypes = {
   direction: PropTypes.string,
   radius: PropTypes.number,
   selectedIds: PropTypes.array,
+  onClose:PropTypes.func
 };
 
 export default connect(
@@ -129,5 +133,8 @@ export default connect(
   }),
   (dispatch) => ({
     dispatch,
+    onClose() {
+      dispatch(closeAppSettingsDialog());
+    },
   })
 )(SwarmUavsTab);

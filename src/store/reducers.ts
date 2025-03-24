@@ -1,4 +1,4 @@
-import { combineReducers } from '@reduxjs/toolkit';
+import {combineReducers} from '@reduxjs/toolkit';
 
 /**
  * Reducer functions for handling the part of the state object that stores the
@@ -60,69 +60,72 @@ import weatherReducer from '~/features/weather/slice';
 import workbenchReducer from '~/features/workbench/slice';
 import targetCNFReducer from '~/features/target/slice';
 import SocketSwarmReducer from "~/features/swarm/slice"
+import AltitudeSettings from '~/features/altitudeSettings/slice'
 /**
  * The reducer function that is responsible for handling all dialog-related
  * parts in the global state object.
  */
 const dialogsReducer = combineReducers({
-  appSettings: appSettingsReducer,
-  authentication: authenticationReducer,
-  deauthentication: deauthenticationReducer,
-  dockDetails: dockDetailsDialogReducer,
-  error: errorHandlingReducer,
-  featureEditor: featureEditorReducer,
-  geofenceSettings: geofenceSettingsReducer,
-  layerSettings: layerSettingsReducer,
-  prompt: promptReducer,
-  savedLocationEditor: savedLocationEditorReducer,
-  serverSettings: serverSettingsReducer,
-  uavDetails: uavDetailsDialogReducer,
+    appSettings: appSettingsReducer,
+    authentication: authenticationReducer,
+    deauthentication: deauthenticationReducer,
+    dockDetails: dockDetailsDialogReducer,
+    error: errorHandlingReducer,
+    featureEditor: featureEditorReducer,
+    geofenceSettings: geofenceSettingsReducer,
+    layerSettings: layerSettingsReducer,
+    prompt: promptReducer,
+    savedLocationEditor: savedLocationEditorReducer,
+    serverSettings: serverSettingsReducer,
+    uavDetails: uavDetailsDialogReducer,
 });
 
 /**
  * The global reducer of the application.
  */
 const reducer = combineReducers({
-  alert: alertReducer,
-  beacons: beaconsReducer,
-  clocks: clocksReducer,
-  connections: connectionsReducer,
-  datasets: datasetsReducer,
-  detachablePanels: detachablePanelsReducer,
-  dialogs: dialogsReducer,
-  docks: docksReducer,
-  features: featuresReducer,
-  fieldNotes: fieldNotesReducer,
-  hotkeys: hotkeysReducer,
-  lcdClock: lcdClockReducer,
-  licenseInfo: licenseInfoReducer,
-  lightControl: lightControlReducer,
-  localServer: localServerReducer,
-  log: logReducer,
-  map: mapReducer,
-  mapCaching: mapCachingReducer,
-  measurement: measurementReducer,
-  messages: messagesReducer,
-  mission: missionReducer,
-  parameters: parametersReducer,
-  preflight: preflightReducer,
-  rtk: rtkReducer,
-  savedLocations: savedLocationsReducer,
-  servers: serversReducer,
-  session: sessionReducer,
-  settings: settingsReducer,
-  show: showReducer,
-  sidebar: sidebarReducer,
-  snackbar: snackbarReducer,
-  threeD: threeDReducer,
-  tour: tourReducer,
-  uavs: uavReducer,
-  uavControl: uavControlReducer,
-  upload: uploadReducer,
-  versionCheck: versionCheckReducer,
-  weather: weatherReducer,
-  workbench: workbenchReducer,
-  targetCNF: targetCNFReducer, socket:SocketSwarmReducer,
+    alert: alertReducer,
+    beacons: beaconsReducer,
+    clocks: clocksReducer,
+    connections: connectionsReducer,
+    datasets: datasetsReducer,
+    detachablePanels: detachablePanelsReducer,
+    dialogs: dialogsReducer,
+    docks: docksReducer,
+    features: featuresReducer,
+    fieldNotes: fieldNotesReducer,
+    hotkeys: hotkeysReducer,
+    lcdClock: lcdClockReducer,
+    licenseInfo: licenseInfoReducer,
+    lightControl: lightControlReducer,
+    localServer: localServerReducer,
+    log: logReducer,
+    map: mapReducer,
+    mapCaching: mapCachingReducer,
+    measurement: measurementReducer,
+    messages: messagesReducer,
+    mission: missionReducer,
+    parameters: parametersReducer,
+    preflight: preflightReducer,
+    rtk: rtkReducer,
+    savedLocations: savedLocationsReducer,
+    servers: serversReducer,
+    session: sessionReducer,
+    settings: settingsReducer,
+    show: showReducer,
+    sidebar: sidebarReducer,
+    snackbar: snackbarReducer,
+    threeD: threeDReducer,
+    tour: tourReducer,
+    uavs: uavReducer,
+    uavControl: uavControlReducer,
+    upload: uploadReducer,
+    versionCheck: versionCheckReducer,
+    weather: weatherReducer,
+    workbench: workbenchReducer,
+    socket: SocketSwarmReducer,
+    targetCNF: targetCNFReducer,
+    altitudeSettings:AltitudeSettings
 });
 
 export default reducer;

@@ -24,7 +24,7 @@ const useStyles = makeStyles(
 
 /**
  * Panel that shows the status of a clock in the style of a classic
- * 7-segment LCD display.
+ * 7-segment.
  */
 const LCDClockPanel = ({ addClockDisplay, ids, removeClockDisplay }) => {
   const classes = useStyles();

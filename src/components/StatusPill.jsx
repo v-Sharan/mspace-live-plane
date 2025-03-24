@@ -28,7 +28,7 @@ const useStyles = makeStyles(
     root: {
       borderRadius: theme.spacing(1),
       color: theme.palette.getContrastText.primary,
-      fontSize: 'small',
+      fontSize: 'x-large',
       overflow: 'hidden',
       padding: `0 ${theme.spacing(0.5)}`,
       textAlign: 'center',

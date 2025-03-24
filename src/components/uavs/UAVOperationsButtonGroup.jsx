@@ -30,13 +30,18 @@ import {
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
 import {openUAVDetailsDialog, setMissionFromServer} from '~/features/uavs/details';
-import { createUAVOperationThunks } from '~/utils/messaging';
+import {createUAVOperationThunks, getTakeOff} from '~/utils/messaging';
 import {getLandingMissionId, getPreferredCommunicationChannelIndex} from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { updateAutoPanSettings, stopAutoPan } from '~/features/map/autopan';
 import {getFeatureById} from "~/features/map-features/selectors";
 import {showNotification} from "~/features/snackbar/slice";
 import {MessageSemantics} from "~/features/snackbar/types";
+import {changeTakeOffAlt} from "~/features/uav-control/slice";
+import {createNewSavedLocation, editSavedLocation} from "~/features/saved-locations/actions";
+import {FormControl, Input, InputLabel} from "@material-ui/core";
+import {changeGridSpacing} from "~/features/swarm/slice";
+import {showError} from "~/features/snackbar/actions";
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -54,12 +59,15 @@ const UAVOperationsButtonGroup = ({
   startSeparator,
   t,
   autopan,
-landingFeature
+landingFeature,
+changeAlt,
+  takeoffAlts
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
   React.useEffect(()=>{
+    // dispatch(showError(`${selectedUAVIds.length}`));
     if(!autopan.isAutoPan) return;
     dispatch(stopAutoPan())
     },[])
@@ -126,6 +134,16 @@ landingFeature
           <FlightTakeoff fontSize={fontSize} />
         </IconButton>
       </Tooltip>
+      <FormControl variant='standard'>
+        {/*<InputLabel htmlFor='takeoff-alt'>Takeoff Altitude</InputLabel>*/}
+        <Input
+          name='takeoff-alt'
+          type='number'
+          inputMode='numeric'
+          value={takeoffAlts}
+          onChange={({ target: { value } }) => changeAlt(parseInt(value))}
+        />
+      </FormControl>
       <Tooltip content={'Land Mission'}>
         <IconButton disabled={isSelectionEmpty} size={iconSize} onClick={land}>
           <FlightLand fontSize={fontSize} />
@@ -307,6 +325,8 @@ UAVOperationsButtonGroup.propTypes = {
   startSeparator: PropTypes.bool,
   t: PropTypes.func,
   landingFeature: PropTypes.func,
+  changeAlt:PropTypes.func,
+  takeoffAlts: PropTypes.number
 };
 
 export default connect(
@@ -319,6 +339,7 @@ export default connect(
       if (landingFeature === undefined) return [];
       return landingFeature?.points;
     },
+    takeoffAlts: getTakeOff(state)
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -330,6 +351,9 @@ export default connect(
       },
       dispatch
     ),
+    changeAlt(alt) {
+      dispatch(changeTakeOffAlt(alt));
+    },
     dispatch,
   })
 )(withTranslation()(UAVOperationsButtonGroup));

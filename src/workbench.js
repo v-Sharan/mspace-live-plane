@@ -133,6 +133,11 @@ export const componentRegistry = {
     label: 'Strike',
     detachable: true,
   },
+  AltitudeSetting: {
+    component: views.AltitudeSettings,
+    label: 'Altitude Settings',
+    detachable: true,
+  },
   camera: {
     component: views.CameraPanel,
     label: 'Camera GUI',

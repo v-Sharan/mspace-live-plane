@@ -41,7 +41,9 @@ const LCDClockDisplayLabel = ({
     formattedTime = '!' + formattedTime;
   }
 
+
   useHarmonicIntervalFn(update, running ? updateInterval : null);
+
 
   return <LCDText {...rest}>{formattedTime}</LCDText>;
 };
