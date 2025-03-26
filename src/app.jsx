@@ -169,6 +169,7 @@ const App = ({ onFirstRender }) => (
       <dialogs.ServerSettingsDialog />
       {hasTimeLimitedSession && <dialogs.SessionExpiryDialog />}
       <dialogs.TimeSyncDialog />
+      <dialogs.GroupSplitDialog />
 
       <CoordinateAveragingDialog />
       <DockDetailsDialog />

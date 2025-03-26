@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -8,32 +8,53 @@ import {
   InputLabel,
   Input,
 } from '@material-ui/core';
-import {getCurrentServerState} from '~/features/servers/selectors';
-import {showNotification} from '~/features/snackbar/slice';
-import {MessageSemantics} from '~/features/snackbar/types';
-import {connect} from 'react-redux';
-import {withTranslation} from 'react-i18next';
+import { getCurrentServerState } from '~/features/servers/selectors';
+import { showNotification } from '~/features/snackbar/slice';
+import { MessageSemantics } from '~/features/snackbar/types';
+import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import messageHub from '~/message-hub';
-import {getSelectedFeatureIds, getFeatureById, getFeaturesInOrder} from '~/features/map-features/selectors';
-import {getSelectedUAVIds} from '~/features/uavs/selectors';
-import {ConnectionState} from '~/model/enums';
-import {changeCoverage,AddGroups,changeGridSpacing,changeWayPoint} from "~/features/swarm/slice";
-import {showError} from "~/features/snackbar/actions";
-import {getLandingMissionId} from "~/features/mission/selectors";
-import {DownloadMissionTrue, setMissionFromServer} from "~/features/uavs/details";
+import {
+  getSelectedFeatureIds,
+  getFeatureById,
+  getFeaturesInOrder,
+} from '~/features/map-features/selectors';
+import { getSelectedUAVIds } from '~/features/uavs/selectors';
+import { ConnectionState } from '~/model/enums';
+import {
+  changeCoverage,
+  changeGridSpacing,
+  openGroupSplitDialog,
+} from '~/features/swarm/slice';
+import { showError } from '~/features/snackbar/actions';
+import { getLandingMissionId } from '~/features/mission/selectors';
+import {
+  DownloadMissionTrue,
+  setMissionFromServer,
+} from '~/features/uavs/details';
 
-const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,dispatch,socketData,landingFeature,features,connection}) => {
-  const [time,setTime] = useState(0);
+const SwarmPanel = ({
+  selectedUAVIds,
+  selectedFeatureIds,
+  getFeatureBySelected,
+  dispatch,
+  socketData,
+  landingFeature,
+  features,
+  connection,
+  onOpen,
+}) => {
+  const [time, setTime] = useState(0);
 
-  const handleLandingMission = async() => {
-    const landingMission = landingFeature()
-    let msg = "Landing Misson and Command"
+  const handleLandingMission = async () => {
+    const landingMission = landingFeature();
+    let msg = 'Landing Misson and Command';
     try {
       const res = await messageHub.sendMessage({
         type: 'X-UAV-socket',
         message: 'landingMission',
         landing: landingMission,
-        ids:selectedUAVIds
+        ids: selectedUAVIds,
       });
 
       if (Boolean(res?.body?.message)) {
@@ -52,22 +73,22 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
         })
       );
     }
-  }
+  };
 
-  const handleSplitMission = async() => {
+  const handleSplitMission = async () => {
     const coords = features.filter((item) => item.type === 'points');
-    const points = coords.map(coord => coord.points[0])
-    if(coords.length === 0) {
-      showError('There is No Point in the map for Searching Area')
+    const points = coords.map((coord) => coord.points[0]);
+    if (coords.length === 0) {
+      showError('There is No Point in the map for Searching Area');
       return;
     }
-    try{
+    try {
       const res = await messageHub.sendMessage({
         type: 'X-UAV-socket',
         message: 'groupsplit',
-        coords:points,
+        coords: points,
         // ids:['01'],
-        ids:selectedUAVIds,
+        ids: selectedUAVIds,
         ...socketData,
       });
       if (Boolean(res?.body?.message)) {
@@ -79,13 +100,13 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
         );
       }
       if (res?.body?.message[0]?.length == 0) {
-          dispatch(
-            showNotification({
-              message: `Read a Empty Mission`,
-              semantics: MessageSemantics.WARNING,
-            })
-          );
-          return;
+        dispatch(
+          showNotification({
+            message: `Read a Empty Mission`,
+            semantics: MessageSemantics.WARNING,
+          })
+        );
+        return;
       }
       dispatch(setMissionFromServer(res.body.message));
       dispatch(
@@ -94,44 +115,44 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
           semantics: MessageSemantics.WARNING,
         })
       );
-
-    }catch(e){
-      dispatch(showError(`Split Mission Message failed to send`))
+    } catch (e) {
+      dispatch(showError(`Split Mission Message failed to send`));
     }
-  }
+  };
 
-  const handleMsg = async(msg) => {
-    try{
-      const res = await messageHub.sendMessage({
-        type: 'X-UAV-socket',
-        message: msg,
-        id:selectedUAVIds[0]
-      });
-      if (Boolean(res?.body?.message)) {
-        dispatch(
-          showNotification({
-            message: `${msg} Message sent`,
-            semantics: MessageSemantics.SUCCESS,
-          })
-        );
-      }
-    }catch(e){
-      dispatch(showError(`${msg} Message failed to send`))
+  const handleMsg = async (msg) => {
+    try {
+      // const res = await messageHub.sendMessage({
+      //   type: 'X-UAV-socket',
+      //   message: msg,
+      //   id: selectedUAVIds[0],
+      // });
+      // if (Boolean(res?.body?.message)) {
+      //   dispatch(
+      //     showNotification({
+      //       message: `${msg} Message sent`,
+      //       semantics: MessageSemantics.SUCCESS,
+      //     })
+      //   );
+      // }
+      console.log(socketData);
+    } catch (e) {
+      dispatch(showError(`${msg} Message failed to send`));
     }
-  }
+  };
 
   const handlePoint = async (message) => {
-    if(selectedFeatureIds.length === 0){
-      dispatch(showError(`${message} needs a path or point`))
+    if (selectedFeatureIds.length === 0) {
+      dispatch(showError(`${message} needs a path or point`));
       return;
     }
-    const featureId = selectedFeatureIds[0]
+    const featureId = selectedFeatureIds[0];
     const data = getFeatureBySelected(featureId);
     try {
       const res = await messageHub.sendMessage({
         type: 'X-UAV-socket',
         message,
-        ids:selectedUAVIds,
+        ids: selectedUAVIds,
         coords: data.points,
         ...socketData,
       });
@@ -145,7 +166,7 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
         );
       }
 
-      if(message == "search"){
+      if (message == 'search') {
         if (res?.body?.message[0]?.length == 0) {
           dispatch(
             showNotification({
@@ -166,12 +187,12 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
         })
       );
     }
-  }
+  };
 
   return (
-    <Box style={{margin: 10, gap: 20}}>
-      <FormGroup style={{display: 'flex', flexDirection: 'row', gap: 15}}>
-        <Box style={{display: 'flex', gap: 20, alignItems: 'center'}}>
+    <Box style={{ margin: 10, gap: 20 }}>
+      <FormGroup style={{ display: 'flex', flexDirection: 'row', gap: 15 }}>
+        <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           {/*<FormControl fullWidth variant='standard'>*/}
           {/*  <Button*/}
           {/*    variant='contained'*/}
@@ -266,13 +287,16 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
           {/*  </DraggableDialog>*/}
           {/*</FormControl>*/}
         </Box>
-        <Box style={{display: 'flex', gap: 20, alignItems: 'center'}}>
+        <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <FormControl
             fullWidth
             variant='standard'
-            style={{display: 'flex', flexDirection: 'row', gap: 10}}
+            style={{ display: 'flex', flexDirection: 'row', gap: 10 }}
           >
-            <Button variant='contained' onClick={async () => await handlePoint('navigate')}>
+            <Button
+              variant='contained'
+              onClick={async () => await handlePoint('navigate')}
+            >
               Navigation
             </Button>
             {/*<Button variant='contained' onClick={async () => await handleMsg('clear_csv')}>*/}
@@ -284,25 +308,28 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
             {time}
           </FormControl>
         </Box>
-        <Box style={{display: 'flex', gap: 20, alignItems: 'center'}}>
+        <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <FormControl
             fullWidth
             variant='standard'
-            style={{display: 'flex', flexDirection: 'row', gap: 10}}
+            style={{ display: 'flex', flexDirection: 'row', gap: 10 }}
           >
             {/*<Button variant='contained' onClick={async () => await handlePoint('loiter')}>*/}
             {/*  Loiter Point*/}
             {/*</Button>*/}
-            <Button variant='contained' onClick={async () => await handlePoint('goal')}>
+            <Button
+              variant='contained'
+              onClick={async () => await handlePoint('goal')}
+            >
               Goal Point
             </Button>
           </FormControl>
         </Box>
-        <Box style={{display: 'flex', gap: 20, alignItems: 'center'}}>
+        <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
           <FormControl
             fullWidth
             variant='standard'
-            style={{display: 'flex', flexDirection: 'row', gap: 10}}
+            style={{ display: 'flex', flexDirection: 'row', gap: 10 }}
           >
             {/*<Button variant='contained' onClick={async () => await handleMsg('share_data')}>*/}
             {/*  share data*/}
@@ -310,7 +337,10 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
             {/*<Button variant='contained' onClick={async () => await handleMsg('home_lock')}>*/}
             {/*  Home Lock*/}
             {/*</Button>*/}
-            <Button variant='contained' onClick={async () => await handleMsg('add_link')}>
+            <Button
+              variant='contained'
+              onClick={async () => await handleMsg('add_link')}
+            >
               Add Link
             </Button>
             <Button
@@ -318,6 +348,13 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
               onClick={async () => await handleMsg('remove_link')}
             >
               Remove Link
+            </Button>
+            <Button
+              variant='contained'
+              onClick={() => dispatch(onOpen())}
+              // disabled={selectedUAVIds.length === 0}
+            >
+              Open Group
             </Button>
           </FormControl>
         </Box>
@@ -386,33 +423,46 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
               inputMode='numeric'
               inputProps={{ id: 'coverage' }}
               value={socketData.coverage}
-              onChange={({ target: { value, name } }) => dispatch(changeCoverage({coverage:parseInt(value)})) }
+              onChange={({ target: { value, name } }) =>
+                dispatch(changeCoverage({ coverage: parseInt(value) }))
+              }
             />
           </FormControl>
           <FormControl variant='standard'>
-            <InputLabel htmlFor='gridSpacing'>Grid Spacing in Meters</InputLabel>
+            <InputLabel htmlFor='gridSpacing'>
+              Grid Spacing in Meters
+            </InputLabel>
             <Input
               name='gridSpacing'
               type='number'
               inputMode='numeric'
               inputProps={{ id: 'gridSpacing' }}
               value={socketData.gridSpacing}
-              onChange={({ target: { value, name } }) => dispatch(changeGridSpacing({gridSpacing: parseInt(value)}))}
+              onChange={({ target: { value, name } }) =>
+                dispatch(changeGridSpacing({ gridSpacing: parseInt(value) }))
+              }
             />
           </FormControl>
           {/*<Button variant='contained' onClick={async () => await handleMsg('stop')}>*/}
           {/*  Stop*/}
           {/*</Button>*/}
-          <Button variant='contained' onClick={async () => await handlePoint('search')}>
+          <Button
+            variant='contained'
+            onClick={async () => await handlePoint('search')}
+          >
             Search
           </Button>
-          <Button variant='contained' onClick={handleSplitMission} disabled={(selectedUAVIds.length === 0)}>
+          <Button
+            variant='contained'
+            onClick={handleSplitMission}
+            disabled={selectedUAVIds.length === 0}
+          >
             Split Group
           </Button>
         </Box>
         <FormControl
           fullWidth
-          style={{display: 'flex', flexDirection: 'row', gap: 10}}
+          style={{ display: 'flex', flexDirection: 'row', gap: 10 }}
         >
           {/*<Button variant='contained' onClick={async () => await handleMsg('remove_uav')}>*/}
           {/*  Remove Uav*/}
@@ -420,7 +470,10 @@ const SwarmPanel = ({selectedUAVIds, selectedFeatureIds, getFeatureBySelected,di
           {/*<Button variant='contained' onClick={async () => await handleMsg('payload')}>*/}
           {/*  Release Payload*/}
           {/*</Button>*/}
-          <Button variant='contained' onClick={() => dispatch(DownloadMissionTrue())}>
+          <Button
+            variant='contained'
+            onClick={() => dispatch(DownloadMissionTrue())}
+          >
             show Trajectory
           </Button>
         </FormControl>
@@ -433,8 +486,8 @@ SwarmPanel.propTypes = {
   selectedUAVIds: PropTypes.arrayOf(PropTypes.string),
   selectedFeatureIds: PropTypes.arrayOf(PropTypes.string),
   getFeatureBySelected: PropTypes.func,
-  socketData:PropTypes.object,
-  landingFeature:PropTypes.func
+  socketData: PropTypes.object,
+  landingFeature: PropTypes.func,
 };
 
 export default connect(
@@ -451,12 +504,13 @@ export default connect(
       return landingFeature?.points;
     },
     socketData: {
-      ...state.socket
+      ...state.socket,
     },
-    connection:getCurrentServerState(state).state,
+    connection: getCurrentServerState(state).state,
   }),
   // mapDispatchToProps
   (dispatch) => ({
-    dispatch
+    dispatch,
+    onOpen: openGroupSplitDialog,
   })
 )(withTranslation()(SwarmPanel));

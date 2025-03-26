@@ -10,6 +10,7 @@ import ServerSettingsDialog from './ServerSettingsDialog';
 import SessionExpiryDialog from './SessionExpiryDialog';
 import SubscriptionDialog from './SubscriptionDialog';
 import TimeSyncDialog from './TimeSyncDialog';
+import GroupSplitDialog from './GroupSplitDialog';
 
 const dialogs = {
   AppSettingsDialog,
@@ -23,6 +24,7 @@ const dialogs = {
   SessionExpiryDialog,
   SubscriptionDialog,
   TimeSyncDialog,
+  GroupSplitDialog,
 };
 
 export default dialogs;

@@ -80,7 +80,7 @@ const FeatureEditorDialogPresentation = (props) => {
     <Dialog fullWidth open={open} maxWidth='sm' onClose={onClose}>
       <DialogTabs value={selectedTab} onChange={onTabSelected}>
         <Tab value='general' label='General' />
-         <Tab value='points' label='Points' />
+        <Tab value='points' label='Points' />
       </DialogTabs>
       {content}
       <DialogActions>{actions}</DialogActions>

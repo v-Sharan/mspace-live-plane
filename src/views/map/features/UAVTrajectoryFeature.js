@@ -95,7 +95,7 @@ export const UAVTrajectoryFeature = ({ source, trajectory, uavId }) => {
     () => createStyleForTrajectoryInViewCoordinates(points),
     [points]
   );
-  console.log(points);
+
   if (points?.length > 0) {
     store.dispatch(
       showNotification({
