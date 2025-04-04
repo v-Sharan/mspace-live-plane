@@ -30,6 +30,7 @@ import BatteryStatusHeaderButton from '~/features/uavs/BatteryStatusHeaderButton
 import WeatherHeaderButton from '~/features/weather/WeatherHeaderButton';
 import { shouldSidebarBeShown } from '~/features/workbench/selectors';
 import { hasFeature } from '~/utils/configuration';
+import Timer from './Time';
 
 const style = {
   backgroundColor: '#333',
@@ -97,7 +98,8 @@ const Header = ({ isSidebarOpen, showSidebar, toggleSidebar }) => (
       >
         Dhaksha Live
       </p>
-      <PerspectiveBar />
+      {/* <PerspectiveBar /> */}
+      <Timer />
       <Box pr={0.5} />
 
       {config.headerComponents

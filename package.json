@@ -9,14 +9,13 @@
     "lint": "xo",
     "postinstall": "patch-package",
     "start": "rimraf build && webpack serve --config webpack/browser.config.js --progress",
-    "start:electron": "webpack serve --server-type http --config webpack/electron.config.js --progress",
+    "start:electron": "webpack serve --server-type https --config webpack/electron.config.js --progress",
     "start:electron:light": "cross-env SKYBRUSH_VARIANT=light webpack serve --server-type https --config webpack/electron.config.js --progress",
     "start:https": "rimraf build && webpack serve --server-type https --config webpack/browser.config.js --progress",
     "stats": "rimraf build && webpack --json --progress --config webpack/dist.config.js >stats.json",
     "stats:prod": "rimraf build && cross-env NODE_ENV=production webpack --json --mode=production --progress --config webpack/dist.config.js >stats.prod.json",
     "test": "npm run lint",
-    "build": "webpack serve --server-type https --config webpack/launcher.config.js",
-    "launcher": "npm run build && electron launcher.js"
+    "launcher": "webpack --config webpack/launcher.config.js --progress"
   },
   "repository": {
     "type": "git",
@@ -190,7 +189,7 @@
     "css-loader": "^6.8.1",
     "dotenv-webpack": "^8.0.0",
     "electron": "^28.1.0",
-    "electron-builder": "^24.9.1",
+    "electron-builder": "^26.0.12",
     "eslint": "^8.56.0",
     "eslint-config-xo": "^0.43.1",
     "eslint-config-xo-react": "^0.27.0",

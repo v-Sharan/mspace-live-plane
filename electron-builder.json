@@ -4,24 +4,22 @@
 
   "artifactName": "${productName} ${version}.${ext}",
 
-  "files": [
-    {
-      "filter": ["assets/**/*", "!node_modules"]
-    },
-    {
-      "from": "build",
-      "filter": [
-        "*.bundle.js",
-        "index.html",
-        "*.mp3",
-        "*.png",
-        "*.svg",
-        "*.ttf",
-        "*.woff",
-        "*.woff2"
-      ]
+  "files": ["!**/*", "package.json", { "from": "build" }],
+
+  "linux": {
+    "category": "Utility",
+    "target": {
+      "target": "AppImage",
+      "arch": "x64"
     }
-  ],
+  },
+
+  "mac": {
+    "category": "public.app-category.utilities",
+    "target": "dmg",
+    "darkModeSupport": true
+  },
+
   "win": {
     "target": {
       "target": "nsis",
@@ -33,8 +31,5 @@
     "artifactName": "${productName} Setup ${version}.${ext}",
     "oneClick": false,
     "allowToChangeInstallationDirectory": true
-  },
-  "directories": {
-    "output": "build"
   }
 }

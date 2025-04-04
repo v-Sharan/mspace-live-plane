@@ -29,19 +29,28 @@ import {
   requestRemovalOfUAVsByIds,
   requestRemovalOfUAVsMarkedAsGone,
 } from '~/features/uavs/actions';
-import {openUAVDetailsDialog, setMissionFromServer} from '~/features/uavs/details';
-import {createUAVOperationThunks, getTakeOff} from '~/utils/messaging';
-import {getLandingMissionId, getPreferredCommunicationChannelIndex} from '~/features/mission/selectors';
+import {
+  openUAVDetailsDialog,
+  setMissionFromServer,
+} from '~/features/uavs/details';
+import { createUAVOperationThunks, getTakeOff } from '~/utils/messaging';
+import {
+  getLandingMissionId,
+  getPreferredCommunicationChannelIndex,
+} from '~/features/mission/selectors';
 import { getUAVIdList } from '~/features/uavs/selectors';
 import { updateAutoPanSettings, stopAutoPan } from '~/features/map/autopan';
-import {getFeatureById} from "~/features/map-features/selectors";
-import {showNotification} from "~/features/snackbar/slice";
-import {MessageSemantics} from "~/features/snackbar/types";
-import {changeTakeOffAlt} from "~/features/uav-control/slice";
-import {createNewSavedLocation, editSavedLocation} from "~/features/saved-locations/actions";
-import {FormControl, Input, InputLabel} from "@material-ui/core";
-import {changeGridSpacing} from "~/features/swarm/slice";
-import {showError} from "~/features/snackbar/actions";
+import { getFeatureById } from '~/features/map-features/selectors';
+import { showNotification } from '~/features/snackbar/slice';
+import { MessageSemantics } from '~/features/snackbar/types';
+import { changeTakeOffAlt } from '~/features/uav-control/slice';
+import {
+  createNewSavedLocation,
+  editSavedLocation,
+} from '~/features/saved-locations/actions';
+import { FormControl, Input, InputLabel } from '@material-ui/core';
+import { changeGridSpacing, setTimerRunning } from '~/features/swarm/slice';
+import { showError } from '~/features/snackbar/actions';
 
 /**
  * Main toolbar for controlling the UAVs.
@@ -59,18 +68,19 @@ const UAVOperationsButtonGroup = ({
   startSeparator,
   t,
   autopan,
-landingFeature,
-changeAlt,
-  takeoffAlts
+  landingFeature,
+  changeAlt,
+  startTimer,
+  takeoffAlts,
 }) => {
   const isSelectionEmpty = isEmpty(selectedUAVIds) && !broadcast;
   const isSelectionSingle = selectedUAVIds.length === 1 && !broadcast;
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     // dispatch(showError(`${selectedUAVIds.length}`));
-    if(!autopan.isAutoPan) return;
-    dispatch(stopAutoPan())
-    },[])
+    if (!autopan.isAutoPan) return;
+    dispatch(stopAutoPan());
+  }, []);
 
   const handleAutoPan = () => {
     const uavid = selectedUAVIds[0];
@@ -217,7 +227,10 @@ changeAlt,
         <IconButton
           disabled={isSelectionEmpty}
           size={iconSize}
-          onClick={turnMotorsOn}
+          onClick={() => {
+            turnMotorsOn();
+            startTimer();
+          }}
         >
           <PlayArrow
             fontSize={fontSize}
@@ -325,8 +338,9 @@ UAVOperationsButtonGroup.propTypes = {
   startSeparator: PropTypes.bool,
   t: PropTypes.func,
   landingFeature: PropTypes.func,
-  changeAlt:PropTypes.func,
-  takeoffAlts: PropTypes.number
+  changeAlt: PropTypes.func,
+  takeoffAlts: PropTypes.number,
+  startTimer: PropTypes.func,
 };
 
 export default connect(
@@ -339,7 +353,7 @@ export default connect(
       if (landingFeature === undefined) return [];
       return landingFeature?.points;
     },
-    takeoffAlts: getTakeOff(state)
+    takeoffAlts: getTakeOff(state),
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -354,6 +368,7 @@ export default connect(
     changeAlt(alt) {
       dispatch(changeTakeOffAlt(alt));
     },
+    startTimer: () => dispatch(setTimerRunning(true)),
     dispatch,
   })
 )(withTranslation()(UAVOperationsButtonGroup));

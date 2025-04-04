@@ -8,7 +8,6 @@
 //   speed:18, ..
 
 import { getFeaturesInOrder } from '../map-features/selectors';
-import { getSelectedUAVIds } from '~/features/uavs/selectors';
 
 /**
  * Returns the current value of skip_waypoint.
@@ -30,11 +29,6 @@ export const getCoverage = (state) => state.socket.coverage;
 export const getFeatureByPoints = (state) => {
   const feature = getFeaturesInOrder(state);
   const points = feature.filter((item) => item.type === 'points');
-  const group = Object.entries(state.socket.group).map(([key, values]) => ({
-    marker: key,
-    values: values,
-  }));
-  console.log(points, group);
   return points;
 };
 
@@ -44,7 +38,9 @@ export const getGroup = (state) =>
     values: values,
   }));
 
-export const valueExists = (state) =>
-  getSelectedUAVIds(state).some((value) =>
+export const getGroupByObject = (state) => state.socket.group;
+
+export const valueExists = (state, listTocheck) =>
+  listTocheck.some((value) =>
     Object.values(state.socket.group).some((arr) => arr.includes(value))
   );

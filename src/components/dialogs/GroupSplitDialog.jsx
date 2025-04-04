@@ -12,6 +12,8 @@ import {
   Dialog,
   Chip,
   OutlinedInput,
+  InputLabel,
+  IconButton,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -20,17 +22,26 @@ import {
   addGroup,
   changeSelectedTab,
   resetGroup,
+  setTime,
 } from '~/features/swarm/slice';
 // import DronePlaceholderList from '~/components/uavs/DronePlaceholderList';
-import { getSelectedUAVIds, getUAVIdList } from '~/features/uavs/selectors';
+import { getUAVIdList } from '~/features/uavs/selectors';
 import DialogTabs from '@skybrush/mui-components/lib/DialogTabs';
 import {
   getFeatureByPoints,
   getGroup,
-  valueExists,
+  getGroupByObject,
 } from '~/features/swarm/selectors';
 import { showError, showNotification } from '~/features/snackbar/actions';
 import { MessageSemantics } from '~/features/snackbar/types';
+import DeleteIcon from '@material-ui/icons/Delete';
+import messageHub from '~/message-hub';
+import { getFeatureById } from '~/features/map-features/selectors';
+
+import store from '~/store';
+import { setMissionFromServer } from '~/features/uavs/details';
+
+const { getState } = store;
 
 const MultipleSelectChip = ({
   onClose,
@@ -38,7 +49,6 @@ const MultipleSelectChip = ({
   uavIds,
   features,
   group,
-  uavExist,
   markerExists,
   SplitGroup,
   showErrorMsg,
@@ -46,6 +56,10 @@ const MultipleSelectChip = ({
   onTabSelected,
   selectedTab,
   deleteAllGroup,
+  gridSpacing,
+  coverage,
+  featurePoints,
+  dispatch,
 }) => {
   let content;
   const actions = [];
@@ -68,6 +82,15 @@ const MultipleSelectChip = ({
     );
   };
 
+  const deleteInput = (id) => {
+    setInputs(inputs.filter((input) => input.id !== id));
+  };
+
+  const valueExists = (listTocheck) =>
+    listTocheck.some((value) =>
+      Object.values(getState().socket.group).some((arr) => arr.includes(value))
+    );
+
   const updateUav = (id, uavslist) => {
     setInputs(
       inputs.map((input) => {
@@ -83,25 +106,53 @@ const MultipleSelectChip = ({
     );
   };
 
-  const handleSubmit = () => {
+  const creategroup = () => {
     for (const val in inputs) {
-      console.log(inputs[val]);
+      const alreadyExist = markerExists(inputs[val].value);
+      const uavExist = valueExists(inputs[val].uavs);
+      if (alreadyExist || uavExist) {
+        showErrorMsg(
+          `${inputs[val].value} is already in a Group or uav is already exist in one of the group`
+        );
+        return;
+      } else {
+        if (inputs[val].uavs?.length == 0) {
+          showErrorMsg(`There is No UAV Selected`);
+          return;
+        }
+        const value = featurePoints(inputs[val].value);
+        SplitGroup({ id: value, uavs: inputs[val].uavs });
+        showMsg(`${inputs[val].value} is added to a Group`);
+      }
     }
-    // const alreadyExist = markerExists(personName);
-    // if (alreadyExist) {
-    //   showErrorMsg(`${personName} is already in a Group`);
-    // } else {
-    //   if (uavIds.length == 0) {
-    //     showErrorMsg(`There is No UAV Selected`);
-    //     return;
-    //   }
-    //   SplitGroup({ id: personName, uavs: uavIds });
-    //   showMsg(`${personName} is added to a Group`);
-    //   onClose();
-    // }
   };
 
-  if (features.length == 0) {
+  const handleSubmit = async () => {
+    creategroup();
+    try {
+      const res = await messageHub.sendMessage({
+        type: 'X-UAV-socket',
+        message: 'spificsplit',
+        groups: getState().socket.group,
+        coverage: coverage,
+        gridSpacing: gridSpacing,
+      });
+      if (Boolean(res?.body?.message)) {
+        showMsg('split Mission Message sent');
+      }
+      if (res?.body?.message[0]?.length == 0) {
+        showMsg('Read a Empty Mission');
+        return;
+      }
+      showMsg(typeof res.body.time?.toFixed(2));
+      dispatch(setMissionFromServer(res.body.message));
+      dispatch(setTime(res.body.time?.toFixed(2)));
+    } catch (err) {
+      showErrorMsg(err?.message);
+    }
+  };
+
+  if (features?.length == 0) {
     content = (
       <DialogContent>
         <p>Feature does not exist</p>
@@ -112,12 +163,6 @@ const MultipleSelectChip = ({
       case 'Create':
         content = (
           <DialogContent>
-            {/* <DronePlaceholderList
-              title='Selection:'
-              items={uavIds}
-              mt={0}
-              mb={1}
-            /> */}
             <Button onClick={addInput}>Add Group</Button>
             {inputs.map((input, i) => (
               <Box
@@ -132,9 +177,9 @@ const MultipleSelectChip = ({
                 }}
               >
                 <FormControl fullWidth>
-                  {/* <InputLabel id='demo-multiple-chip-label'>
+                  <InputLabel id='demo-multiple-chip-label'>
                     Group {i + 1}
-                    </InputLabel> */}
+                  </InputLabel>
                   <Select
                     labelId='demo-multiple-chip-label'
                     style={{ flex: 1 }}
@@ -174,6 +219,12 @@ const MultipleSelectChip = ({
                     ))}
                   </Select>
                 </FormControl>
+                <IconButton
+                  aria-label='delete'
+                  onClick={() => deleteInput(input.id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
               </Box>
             ))}
           </DialogContent>
@@ -230,7 +281,6 @@ MultipleSelectChip.propTypes = {
   uavIds: PropTypes.arrayOf(PropTypes.string),
   features: PropTypes.arrayOf(PropTypes.object).isRequired,
   group: PropTypes.object,
-  uavExist: PropTypes.bool,
   markerExists: PropTypes.func,
   SplitGroup: PropTypes.func,
   showErrorMsg: PropTypes.func,
@@ -238,6 +288,9 @@ MultipleSelectChip.propTypes = {
   selectedTab: 'Create' | 'Delete' | 'View Groups',
   onTabSelected: PropTypes.func,
   deleteAllGroup: PropTypes.func,
+  coverage: PropTypes.number,
+  gridSpacing: PropTypes.number,
+  featurePoints: PropTypes.func,
 };
 
 const GroupSplitDialog = connect(
@@ -247,11 +300,16 @@ const GroupSplitDialog = connect(
     uavIds: getUAVIdList(state),
     features: getFeatureByPoints(state),
     group: getGroup(state),
-    uavExist: valueExists(state),
     markerExists: (markerToCheck) => {
       return state.socket.group.hasOwnProperty(markerToCheck);
     },
     selectedTab: state.socket.selectedTab,
+    coverage: state.socket.coverage,
+    gridSpacing: state.socket.gridSpacing,
+    featurePoints: (featureId) => {
+      const feature = getFeatureById(state, featureId);
+      return [feature.points[0][1], feature.points[0][0]];
+    },
   }),
   // mapDispatchToProps
   (dispatch) => ({
@@ -271,6 +329,7 @@ const GroupSplitDialog = connect(
     deleteAllGroup() {
       dispatch(resetGroup());
     },
+    dispatch,
   })
 )(MultipleSelectChip);
 

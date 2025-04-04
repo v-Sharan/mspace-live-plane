@@ -20,11 +20,11 @@ import {
   getFeaturesInOrder,
 } from '~/features/map-features/selectors';
 import { getSelectedUAVIds } from '~/features/uavs/selectors';
-import { ConnectionState } from '~/model/enums';
 import {
   changeCoverage,
   changeGridSpacing,
   openGroupSplitDialog,
+  setTime,
 } from '~/features/swarm/slice';
 import { showError } from '~/features/snackbar/actions';
 import { getLandingMissionId } from '~/features/mission/selectors';
@@ -44,8 +44,6 @@ const SwarmPanel = ({
   connection,
   onOpen,
 }) => {
-  const [time, setTime] = useState(0);
-
   const handleLandingMission = async () => {
     const landingMission = landingFeature();
     let msg = 'Landing Misson and Command';
@@ -87,7 +85,6 @@ const SwarmPanel = ({
         type: 'X-UAV-socket',
         message: 'groupsplit',
         coords: points,
-        // ids:['01'],
         ids: selectedUAVIds,
         ...socketData,
       });
@@ -122,20 +119,19 @@ const SwarmPanel = ({
 
   const handleMsg = async (msg) => {
     try {
-      // const res = await messageHub.sendMessage({
-      //   type: 'X-UAV-socket',
-      //   message: msg,
-      //   id: selectedUAVIds[0],
-      // });
-      // if (Boolean(res?.body?.message)) {
-      //   dispatch(
-      //     showNotification({
-      //       message: `${msg} Message sent`,
-      //       semantics: MessageSemantics.SUCCESS,
-      //     })
-      //   );
-      // }
-      console.log(socketData);
+      const res = await messageHub.sendMessage({
+        type: 'X-UAV-socket',
+        message: msg,
+        id: selectedUAVIds[0],
+      });
+      if (Boolean(res?.body?.message)) {
+        dispatch(
+          showNotification({
+            message: `${msg} Message sent`,
+            semantics: MessageSemantics.SUCCESS,
+          })
+        );
+      }
     } catch (e) {
       dispatch(showError(`${msg} Message failed to send`));
     }
@@ -177,7 +173,7 @@ const SwarmPanel = ({
           return;
         }
         dispatch(setMissionFromServer(res.body.message));
-        setTime(res.body.time);
+        dispatch(setTime(res.body.time?.toFixed(2)));
       }
     } catch (e) {
       dispatch(
@@ -305,7 +301,6 @@ const SwarmPanel = ({
             <Button variant='contained' onClick={handleLandingMission}>
               Home
             </Button>
-            {time}
           </FormControl>
         </Box>
         <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
@@ -325,11 +320,22 @@ const SwarmPanel = ({
             </Button>
           </FormControl>
         </Box>
-        <Box style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+        <Box
+          style={{
+            display: 'flex',
+            gap: 20,
+            alignItems: 'center',
+          }}
+        >
           <FormControl
             fullWidth
             variant='standard'
-            style={{ display: 'flex', flexDirection: 'row', gap: 10 }}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: 10,
+              alignItems: 'center',
+            }}
           >
             {/*<Button variant='contained' onClick={async () => await handleMsg('share_data')}>*/}
             {/*  share data*/}
@@ -356,6 +362,7 @@ const SwarmPanel = ({
             >
               Open Group
             </Button>
+            Estimated time: {socketData.time} minutes
           </FormControl>
         </Box>
         <Box

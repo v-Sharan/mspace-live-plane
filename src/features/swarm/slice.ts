@@ -15,6 +15,8 @@ interface SwarmSlice {
   numOfGroups: number;
   group: Group;
   selectedTab: 'Create' | 'Delete' | 'View Groups';
+  time: number;
+  timerRunning: boolean;
 }
 
 const initialState: SwarmSlice = {
@@ -28,6 +30,8 @@ const initialState: SwarmSlice = {
   numOfGroups: 0,
   group: {},
   selectedTab: 'Create',
+  time: 0,
+  timerRunning: false,
 };
 
 const { actions, reducer } = createSlice({
@@ -76,6 +80,12 @@ const { actions, reducer } = createSlice({
     deleteGroup: (state, action: PayloadAction<string>) => {
       delete state.group[action.payload];
     },
+    setTime: (state, actions: PayloadAction<number>) => {
+      state.time = actions.payload;
+    },
+    setTimerRunning: (state, action: PayloadAction<boolean>) => {
+      state.timerRunning = action.payload;
+    },
   },
 });
 
@@ -91,6 +101,8 @@ export const {
   addGroup,
   changeSelectedTab,
   resetGroup,
+  setTime,
+  setTimerRunning,
 } = actions;
 
 export default reducer;

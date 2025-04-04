@@ -2,46 +2,34 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { shouldOptimizeUIForTouch } from '~/features/settings/selectors';
-import { Form } from 'react-final-form';
-import { Box, Button, FormControl, InputLabel, Input } from '@material-ui/core';
+import { Box } from '@material-ui/core';
+import Coordinates from './Coordinates';
+import { setLatitude, setLongitude } from '~/features/map-features/slice';
 
-const FeaturePointsForm = ({ feature, optimizeUIForTouch }) => {
-  const handleChangeLatLon = (fields) => {
-    console.log(fields);
-  };
-
+const FeaturePointsForm = ({
+  feature,
+  optimizeUIForTouch,
+  Latitude,
+  Longitude,
+}) => {
   return (
-    <Box>
-      <FormControl
-        variant='standard'
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: 15,
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Box>
-          <InputLabel id='drone-id1'>Target Latitude:</InputLabel>
-          <Input
-            style={{ padding: 5 }}
-            type='string'
-            value={'sample'}
-            onChange={() => {}}
-          />
-        </Box>
-        <Box>
-          <InputLabel id='drone-id2'>Target :</InputLabel>
-          <Input
-            style={{ padding: 5 }}
-            type='string'
-            value={'sample'}
-            onChange={() => {}}
-          />
-        </Box>
-      </FormControl>
+    <Box
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+        marginTop: 10,
+      }}
+    >
+      {feature.points.map((item, i) => (
+        <Coordinates
+          value={item}
+          Latitude={Latitude}
+          Longitude={Longitude}
+          optimizeUIForTouch={optimizeUIForTouch}
+          index={i}
+        />
+      ))}
     </Box>
   );
 };
@@ -50,6 +38,8 @@ FeaturePointsForm.propTypes = {
   feature: PropTypes.object.isRequired,
   featureId: PropTypes.string.isRequired,
   optimizeUIForTouch: PropTypes.bool.isRequired,
+  Latitude: PropTypes.func,
+  Longitude: PropTypes.func,
 };
 
 export default connect(
@@ -58,5 +48,10 @@ export default connect(
     optimizeUIForTouch: shouldOptimizeUIForTouch(state),
   }),
   // mapDispatchToProps
-  (dispatch, { featureId }) => ({})
+  (dispatch, { featureId }) => ({
+    Latitude: (index, latitude) =>
+      dispatch(setLatitude({ id: featureId, index, latitude })),
+    Longitude: (index, longitude) =>
+      dispatch(setLongitude({ id: featureId, index, longitude })),
+  })
 )(FeaturePointsForm);

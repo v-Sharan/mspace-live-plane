@@ -6,12 +6,14 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { type ReadonlyDeep } from 'type-fest';
 
-import {type Feature, LabelStyle} from '~/model/features';
+import { type Feature, LabelStyle } from '~/model/features';
 import {
   addItemToBack,
   type Collection,
   deleteItemsByIds,
 } from '~/utils/collections';
+
+import { type Coordinate2D } from '~/utils/math';
 
 import { type FeatureProperties } from './types';
 
@@ -186,11 +188,51 @@ const { actions, reducer } = createSlice({
       const { id, name } = action.payload;
       const feature = state.byId[id];
 
+      console.log(feature);
+
       if (feature === undefined) {
         console.warn(`Cannot rename non-existent feature ${id}`);
       } else {
         feature.label = name;
-        feature.labelStyle= LabelStyle.THIN_OUTLINE;
+        feature.labelStyle = LabelStyle.THIN_OUTLINE;
+      }
+    },
+
+    setLatitude(
+      state,
+      action: PayloadAction<{
+        id: FeatureProperties['id'];
+        latitude: Coordinate2D;
+        index: number;
+      }>
+    ) {
+      const { id, latitude, index } = action.payload;
+      const feature = state.byId[id];
+
+      if (feature === undefined) {
+        console.warn(`Cannot rename non-existent feature ${id}`);
+      } else {
+        //@ts-ignore
+        feature.points[index][1] = latitude;
+      }
+    },
+
+    setLongitude(
+      state,
+      action: PayloadAction<{
+        id: FeatureProperties['id'];
+        longitude: Coordinate2D;
+        index: number;
+      }>
+    ) {
+      const { id, longitude, index } = action.payload;
+      const feature = state.byId[id];
+
+      if (feature === undefined) {
+        console.warn(`Cannot rename non-existent feature ${id}`);
+      } else {
+        //@ts-ignore
+        feature.points[index][0] = longitude;
       }
     },
 
@@ -267,7 +309,48 @@ const { actions, reducer } = createSlice({
         feature.showPoints = Boolean(visible);
       }
     },
+    renameFeatureLatitudeLongitude(
+      state,
+      action: PayloadAction<{
+        id: FeatureProperties['id'];
+        coordinates: [number, number][];
+      }>
+    ) {
+      const { id, coordinates } = action.payload;
+      const feature = state.byId[id];
 
+      if (!feature) {
+        // console.warn(Feature with ID ${id} does not exist.);
+        return;
+      }
+
+      if (!Array.isArray(feature.points)) {
+        // console.warn(
+        //   Feature points array is missing for ID: ${id}, initializing...
+        // );
+        feature.points = [];
+      }
+
+      // console.log(Existing feature points:, feature.points);
+
+      if (!Array.isArray(coordinates) || coordinates.length === 0) {
+        // console.warn(Invalid or empty coordinates provided.);
+        return;
+      }
+
+      feature.points.length = coordinates.length;
+
+      coordinates.forEach((coord, index) => {
+        if (!Array.isArray(coord) || coord.length !== 2) {
+          // console.warn(Invalid coordinate format at index ${index}:, coord);
+          return;
+        }
+
+        feature.points[index] = [Number(coord[1]), Number(coord[0])];
+      });
+
+      // console.log(Updated feature points:, feature.points);
+    },
     updateFeaturePropertiesByIds(
       state,
       action: PayloadAction<
@@ -311,6 +394,9 @@ export const {
   updateFeaturePointsVisible,
   updateFeaturePropertiesByIds,
   updateFeatureVisibility,
+  setLatitude,
+  setLongitude,
+  renameFeatureLatitudeLongitude,
 } = actions;
 
 export default reducer;
